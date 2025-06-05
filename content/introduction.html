@@ -1,0 +1,672 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Introduction &#8212; Diffusion Based GenAI Tutorial</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'content/introduction';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Generative Models Before Diffusion" href="genai_before_diffusion.html" />
+    <link rel="prev" title="Diffusion-Based Generative AI" href="../intro.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/Logo.png" class="logo__image only-light" alt="Diffusion Based GenAI Tutorial - Home"/>
+    <script>document.write(`<img src="../_static/Logo.png" class="logo__image only-dark" alt="Diffusion Based GenAI Tutorial - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    Diffusion-Based Generative AI
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="genai_before_diffusion.html">Generative Models Before Diffusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ddpm.html">Denoising Diffusion Probabilistic Models (DDPM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="codes/code_1_md.html">Code: Diffusion from Scratch</a></li>
+
+
+
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/content/introduction.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Introduction</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-generative-ai">What is Generative AI?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#motivation-for-diffusion-models">Motivation for Diffusion Models</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#comparison-diffusion-models-vs-gans-vs-vaes">Comparison: Diffusion Models vs GANs vs VAEs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-diffusion-models-are-transforming-modalities">How Diffusion Models Are Transforming Modalities</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#image-generation">Image Generation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#video-generation">Video Generation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#audio-speech-synthesis">Audio &amp; Speech Synthesis</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#language">Language</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#multimodal-tasks">Multimodal Tasks</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">#</a></h1>
+<section id="what-is-generative-ai">
+<h2>What is Generative AI?<a class="headerlink" href="#what-is-generative-ai" title="Link to this heading">#</a></h2>
+<p>Generative AI refers to a class of artificial intelligence techniques that <strong>generate new data</strong> that mimics existing data. Unlike traditional discriminative models that predict labels or scores, <strong>generative models learn the underlying distribution of data</strong> and can sample from it to produce realistic outputs.</p>
+<p>Generative AI can:</p>
+<ul class="simple">
+<li><p>Generate <strong>images</strong> from text or noise (e.g., Stable Diffusion, DALL·E)</p></li>
+<li><p>Create <strong>videos</strong> from scripts or a few frames (e.g., AnimateDiff)</p></li>
+<li><p>Produce <strong>natural speech</strong> or soundscapes from text (e.g., AudioLDM)</p></li>
+<li><p>Write <strong>articles, code, or stories</strong> from a prompt (e.g., GPT-4)</p></li>
+</ul>
+<p>In essence, it empowers machines to <strong>imagine, create, and simulate</strong> content like a human.</p>
+</section>
+<hr class="docutils" />
+<section id="motivation-for-diffusion-models">
+<h2>Motivation for Diffusion Models<a class="headerlink" href="#motivation-for-diffusion-models" title="Link to this heading">#</a></h2>
+<p>Before diffusion models gained traction, <strong>Generative Adversarial Networks (GANs)</strong> and <strong>Variational Autoencoders (VAEs)</strong> dominated the generative landscape. However, these models came with challenges:</p>
+<ul class="simple">
+<li><p><strong>GANs</strong> are powerful but suffer from:</p>
+<ul>
+<li><p>Mode collapse (limited diversity in outputs)</p></li>
+<li><p>Unstable training</p></li>
+<li><p>Lack of likelihood estimation</p></li>
+</ul>
+</li>
+<li><p><strong>VAEs</strong> are stable but:</p>
+<ul>
+<li><p>Produce blurry or low-fidelity samples</p></li>
+<li><p>Have limited expressiveness in modeling data distributions</p></li>
+</ul>
+</li>
+</ul>
+<p><strong>Diffusion models</strong> emerged to <strong>overcome these limitations</strong>. Their key strengths include:</p>
+<ul class="simple">
+<li><p><strong>Stability during training</strong>: No adversarial loss</p></li>
+<li><p><strong>High sample diversity</strong>: Avoid mode collapse</p></li>
+<li><p><strong>Superior fidelity</strong>: Especially in image and audio generation</p></li>
+<li><p><strong>Flexible conditioning</strong>: Works well with text, images, labels, etc.</p></li>
+<li><p><strong>Probabilistic framework</strong>: Allows explicit likelihood computation and score-based generation</p></li>
+</ul>
+<p>These benefits have led to rapid adoption of diffusion models in academia and industry, with many open-source implementations accelerating research and deployment.</p>
+</section>
+<hr class="docutils" />
+<section id="comparison-diffusion-models-vs-gans-vs-vaes">
+<h2>Comparison: Diffusion Models vs GANs vs VAEs<a class="headerlink" href="#comparison-diffusion-models-vs-gans-vs-vaes" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Feature</p></th>
+<th class="head"><p>GANs</p></th>
+<th class="head"><p>VAEs</p></th>
+<th class="head"><p>Diffusion Models</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Training Stability</p></td>
+<td><p>❌ Unstable</p></td>
+<td><p>✅ Stable</p></td>
+<td><p>✅ Very Stable</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sample Quality</p></td>
+<td><p>✅ High (if trained well)</p></td>
+<td><p>❌ Often blurry</p></td>
+<td><p>✅ Very high fidelity</p></td>
+</tr>
+<tr class="row-even"><td><p>Mode Coverage</p></td>
+<td><p>❌ Prone to collapse</p></td>
+<td><p>✅ Good</p></td>
+<td><p>✅ Excellent</p></td>
+</tr>
+<tr class="row-odd"><td><p>Inference Speed</p></td>
+<td><p>✅ Fast (1 step)</p></td>
+<td><p>✅ Fast</p></td>
+<td><p>❌ Slow (multi-step)</p></td>
+</tr>
+<tr class="row-even"><td><p>Likelihood Estimation</p></td>
+<td><p>❌ No</p></td>
+<td><p>✅ Yes</p></td>
+<td><p>✅ Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>Conditioning Flexibility</p></td>
+<td><p>⚠️ Requires tricks</p></td>
+<td><p>⚠️ Possible but limited</p></td>
+<td><p>✅ Highly flexible</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><em>Summary</em>: <strong>Diffusion models offer a trade-off</strong> — slightly slower sampling in exchange for <strong>high-quality, diverse, and controllable generations</strong>.</p>
+</section>
+<hr class="docutils" />
+<section id="how-diffusion-models-are-transforming-modalities">
+<h2>How Diffusion Models Are Transforming Modalities<a class="headerlink" href="#how-diffusion-models-are-transforming-modalities" title="Link to this heading">#</a></h2>
+<section id="image-generation">
+<h3>Image Generation<a class="headerlink" href="#image-generation" title="Link to this heading">#</a></h3>
+<p>Diffusion models are at the heart of state-of-the-art text-to-image systems like:</p>
+<ul class="simple">
+<li><p><strong>DALL·E 2</strong> (OpenAI): Generate imaginative visuals from complex text prompts.</p></li>
+<li><p><strong>Stable Diffusion</strong> (Stability AI): Open-source framework for high-quality image synthesis, fine-tuning, and inpainting.</p></li>
+<li><p><strong>Imagen</strong> (Google): High-fidelity image generation with superior photorealism and caption alignment.</p></li>
+</ul>
+<p><strong>Key Impact</strong>:</p>
+<ul class="simple">
+<li><p>Commercial tools for advertising, design, and creative arts.</p></li>
+<li><p>Personalized avatars, product mockups, and visual storyboarding.</p></li>
+<li><p>Fine-grained control via models like <strong>ControlNet</strong>, enabling generation from depth, pose, or edges.</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="video-generation">
+<h3>Video Generation<a class="headerlink" href="#video-generation" title="Link to this heading">#</a></h3>
+<p>Recent advances like <strong>VideoCrafter</strong>, <strong>AnimateDiff</strong>, and <strong>ModelScope T2V</strong> have extended diffusion models into the temporal domain. These models generate coherent video clips from:</p>
+<ul class="simple">
+<li><p>Text prompts (e.g., “A panda surfing on waves”).</p></li>
+<li><p>Reference frames (image-to-video).</p></li>
+<li><p>Human motion sequences.</p></li>
+</ul>
+<p><strong>Key Impact</strong>:</p>
+<ul class="simple">
+<li><p>Virtual filmmaking, motion synthesis, and gaming cinematics.</p></li>
+<li><p>AI-powered video ad creation and animation pipelines.</p></li>
+<li><p>Talking head avatars from a single photo + audio.</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="audio-speech-synthesis">
+<h3>Audio &amp; Speech Synthesis<a class="headerlink" href="#audio-speech-synthesis" title="Link to this heading">#</a></h3>
+<p>Diffusion is revolutionizing audio generation through models such as:</p>
+<ul class="simple">
+<li><p><strong>DiffWave</strong> and <strong>WaveGrad</strong>: High-quality vocoders for speech synthesis.</p></li>
+<li><p><strong>AudioLDM</strong>: Text-to-audio generation (e.g., “Sound of rain in a forest”).</p></li>
+<li><p><strong>StyleDiffusion</strong>: Voice cloning, emotion transfer, and accent editing.</p></li>
+</ul>
+<p><strong>Key Impact</strong>:</p>
+<ul class="simple">
+<li><p>Text-to-speech systems with natural prosody and emotion.</p></li>
+<li><p>AI voice dubbing, sound effects generation, and audio inpainting.</p></li>
+<li><p>Personalized AI assistants and virtual characters.</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="language">
+<h3>Language<a class="headerlink" href="#language" title="Link to this heading">#</a></h3>
+<p>Diffusion models for language are a promising alternative to autoregressive Language Models.
+Traditional autoregressive language models (e.g., GPT) generate text token by token in a fixed left-to-right order. While powerful, they come with limitations such as exposure bias, lack of global control, fixed generation order.</p>
+<p>Diffusion models offer an alternative by generating entire sequences iteratively, denoising from random noise toward coherent text.</p>
+<ul class="simple">
+<li><p>Offer global, flexible generation with potential for editing and controllability.</p></li>
+<li><p>Require clever workarounds due to discreteness of language.
+<strong>Key Impact</strong>:</p></li>
+<li><p>Though not yet mainstream, these models are actively researched and show promise in high-quality, globally consistent text generation.</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="multimodal-tasks">
+<h3>Multimodal Tasks<a class="headerlink" href="#multimodal-tasks" title="Link to this heading">#</a></h3>
+<p>While diffusion models are traditionally vision- and audio-focused, multimodal models now integrate <strong>language understanding</strong> with other data modalities  through diffusion pipelines:</p>
+<ul class="simple">
+<li><p><strong>LDMs (Latent Diffusion Models)</strong> use language to condition the denoising process.</p></li>
+<li><p><strong>Multimodal Transformers + Diffusion</strong> allow tasks like:</p>
+<ul>
+<li><p>Text-to-image with visual grounding.</p></li>
+<li><p>Text-to-video with temporal reasoning.</p></li>
+<li><p>Cross-modal generation: e.g., generate audio from image captions.</p></li>
+</ul>
+</li>
+</ul>
+<p><strong>Key Impact</strong>:</p>
+<ul class="simple">
+<li><p>Cross-domain creativity: create visuals, voices, or scenes from a single prompt.</p></li>
+<li><p>Rich storytelling for education, advertising, and gaming.</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
+<p>Diffusion models have become the <strong>engine of creativity</strong> in modern AI. Their modular architecture, stability, and scalability have made them the preferred choice for generative applications across modalities. From producing high-res visuals to generating expressive speech and imaginative video, diffusion-based GenAI is defining the future of content creation.</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./content"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../intro.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Diffusion-Based Generative AI</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="genai_before_diffusion.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Generative Models Before Diffusion</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-generative-ai">What is Generative AI?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#motivation-for-diffusion-models">Motivation for Diffusion Models</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#comparison-diffusion-models-vs-gans-vs-vaes">Comparison: Diffusion Models vs GANs vs VAEs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-diffusion-models-are-transforming-modalities">How Diffusion Models Are Transforming Modalities</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#image-generation">Image Generation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#video-generation">Video Generation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#audio-speech-synthesis">Audio &amp; Speech Synthesis</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#language">Language</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#multimodal-tasks">Multimodal Tasks</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Sumukh
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

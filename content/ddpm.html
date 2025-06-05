@@ -1,0 +1,830 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Denoising Diffusion Probabilistic Models (DDPM) &#8212; Diffusion Based GenAI Tutorial</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'content/ddpm';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Code: Diffusion from Scratch" href="codes/code_1_md.html" />
+    <link rel="prev" title="Generative Models Before Diffusion" href="genai_before_diffusion.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/Logo.png" class="logo__image only-light" alt="Diffusion Based GenAI Tutorial - Home"/>
+    <script>document.write(`<img src="../_static/Logo.png" class="logo__image only-dark" alt="Diffusion Based GenAI Tutorial - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    Diffusion-Based Generative AI
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="genai_before_diffusion.html">Generative Models Before Diffusion</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Denoising Diffusion Probabilistic Models (DDPM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="codes/code_1_md.html">Code: Diffusion from Scratch</a></li>
+
+
+
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/content/ddpm.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Denoising Diffusion Probabilistic Models (DDPM)</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#elbo-for-diffusion-model">ELBO for Diffusion model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#consistency-term">Consistency term</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reconstruction-term">Reconstruction Term</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#prior-matching-term">Prior Matching Term</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#denoising-matching-term">Denoising Matching Term</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forward-convergence">Forward Convergence</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Denoising Matching Term</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#x-0-predictor"><span class="math notranslate nohighlight">\(x_0\)</span> Predictor</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#epsilon-t-predictor"><span class="math notranslate nohighlight">\(\epsilon_t\)</span> Predictor</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#training-ddpm">Training DDPM</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reverse-process-ddpm-generation">Reverse Process (DDPM): Generation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reference">Reference</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="denoising-diffusion-probabilistic-models-ddpm">
+<h1>Denoising Diffusion Probabilistic Models (DDPM)<a class="headerlink" href="#denoising-diffusion-probabilistic-models-ddpm" title="Link to this heading">#</a></h1>
+<p>Let us consider a special case of Markovian hierarchical Variational Autoencoders (VAEs), where the latent space has the same dimensionality as the data space. In this setup, the variational posteriors
+<span class="math notranslate nohighlight">\(q_\phi(x_{t+1}|x_t)\)</span> are not learned but predefined, i.e.,</p>
+<div class="math notranslate nohighlight">
+\[
+q_\phi(x_{t+1}|x_t) \to q(x_{t+1}|x_t)
+\]</div>
+<p>modeled as a linear Gaussian. The Gaussian parameters of the latent encoders vary over time such that the distribution of the latent at the final time step <span class="math notranslate nohighlight">\(T\)</span> is a standard Gaussian.</p>
+<p><img alt="An illustration of a Variational Diffusion Model.  represents the original data (e.g., natural images),  corresponds to pure Gaussian noise, and  denotes intermediate noisy states of . Each  is modeled as a Gaussian that uses the output of the previous state as its mean." src="../_images/diffusion_model.png" /></p>
+<p><strong>Forward process:</strong></p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align*} 
+q(x_{1:T}|x_0) &amp;= \prod_{t=1}^T q(x_{t}|x_{t-1})\\
+q(x_t|x_{t-1}) &amp;= \mathcal{N}(x_t; \sqrt{1-\beta_t}x_{t-1}, \beta_t \mathbf{I})
+\end{align*} 
+\end{split}\]</div>
+<p>where the noise schedule <span class="math notranslate nohighlight">\(\{\beta_t\in (0,1)\}_{t=1}^T\)</span> is monotonically increasing: <span class="math notranslate nohighlight">\(\beta_1\leq\beta_2\leq...\leq\beta_T\)</span>. The forward process can be interpreted as gradually adding Gaussian noise over time. There are two common variants of adding noise:</p>
+<ul class="simple">
+<li><p>Variance Preserving: <span class="math notranslate nohighlight">\(q(x_t|x_{t-1}) = \mathcal{N}(x_t; \sqrt{1-\beta_t}x_{t-1}, \beta_t \mathbf{I})\)</span>,  where the goal is to keep the variance very small for each step.</p></li>
+<li><p>Variance Exploding: <span class="math notranslate nohighlight">\(q(x_t|x_{t-1}) = \mathcal{N}(x_t; x_{t-1}, (\sigma_i^2-\sigma_{i-1}^2)\mathbf{I})\)</span></p></li>
+</ul>
+<p>Further more, the <span class="math notranslate nohighlight">\(\beta_t\)</span> can be constant, linearly or quadratically increasing, a cosine function, or learned.</p>
+<p><strong>Note:</strong> For reverse step <span class="math notranslate nohighlight">\(p_\theta(x_{t-1}|x_t)\)</span> becomes Gaussian only when <span class="math notranslate nohighlight">\(\beta_t\)</span> is small <span class="math notranslate nohighlight">\((\beta_t&lt;&lt;1)\)</span>.</p>
+<p><strong>Reverse process:</strong></p>
+<div class="math notranslate nohighlight">
+\[
+p_\theta(x_{0:T}) = p(x_{T}) \prod_{t=1}^T p_\theta(x_{t-1}|x_{t}),\quad\text{where } p(x_T)=\mathcal{N}(x_T, 0, \mathbf{I})
+\]</div>
+<hr class="docutils" />
+<section id="elbo-for-diffusion-model">
+<h2>ELBO for Diffusion model<a class="headerlink" href="#elbo-for-diffusion-model" title="Link to this heading">#</a></h2>
+<p>For the diffusion model the negative Evidence Lower Bound (ELBO) is minimized:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align*} 
+- &amp;\log\; p(x) = -\log \; \int p_\theta(x_{0:T}) dx_{1:T} = -\log \; \int \frac{p_\theta(x_{0:T})q(x_{1:T}|x_0)}{q(x_{1:T}|x_0)} dx_{1:T} = -\log \; \mathbb{E}_{q(x_{1:T}|x_0)} \left[ \frac{p_\theta(x_{0:T})}{q(x_{1:T}|x_0)} \right]\\
+&amp; \geq \mathbb{E}_{q(x_{1:T}|x_0)} \left[ -\log \; \frac{p_\theta(x_{0:T})}{q(x_{1:T}|x_0)}\right] = ... = \\
+&amp;= -\underset{\textbf{reconstruction term}}{\underbrace{\mathbb{E}_{q(x_1|x_0)} \left[ \log \; p_\theta(x_0|x_1)\right]}}
++\underset{\textbf{prior matching term}}{\underbrace{\mathbb{E}_{q(x_{T-1}|x_0)} \left[ D_{KL} (q(x_T|x_{T-1})|| p(x_T))\right]}}
++ \underset{\textbf{consistency term}}{\underbrace{\sum_{t=1}^{T-1} \mathbb{E}_{q(x_{t-1}, x_{t+1} |x_0)} \left[ D_{KL} (q(x_t|x_{t-1})|| p_\theta(x_t|x_{t+1}))\right]}}
+\end{align*}
+\end{split}\]</div>
+<section id="consistency-term">
+<h3>Consistency term<a class="headerlink" href="#consistency-term" title="Link to this heading">#</a></h3>
+<p>The consistency term enforces agreement between the forward and reverse transitions at each timestep:</p>
+<div class="math notranslate nohighlight">
+\[
+\sum_{t=1}^{T-1} \mathbb{E}_{q(x_{t-1}, x_{t+1} |x_0)} \left[ D_{KL} (q(x_t|x_{t-1})|| p_\theta(x_t|x_{t+1}))\right]
+\]</div>
+<p><img alt="Consistency term." src="../_images/consistency_term.png" /></p>
+<p>However, this term involves expectations over two random variables, which is computationally expensive. To reduce complexity, the ELBO can be reparameterized using the Markov assumption (<span class="math notranslate nohighlight">\(x_t\)</span> only depends on <span class="math notranslate nohighlight">\(x_{t-1}\)</span>). Hence,</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align*} 
+q(x_t|x_{t-1}) &amp;= q(x_t|x_{t-1}, x_0)\\
+q(x_t|x_{t-1}) &amp;= \frac{q(x_{t-1}|x_{t}, x_0)q(x_t|x_0)}{q(x_{t-1}|x_0)}
+\end{align*} 
+\end{split}\]</div>
+<p>Using this, the ELBO can be rewritten as:</p>
+<div class="math notranslate nohighlight">
+\[
+\begin{align*} 
+\underset{\textbf{reconstruction term}}{\underbrace{-\mathbb{E}_{q(x_1|x_0)} \left[ \log \; p_\theta(x_0|x_1)\right]}} 
++\underset{\textbf{prior matching term}}{\underbrace{ D_{KL} (q(x_T|x_0)|| p(x_T))}}+ \underset{\textbf{denoising matching term}}{\underbrace{\sum_{t=2}^{T} \mathbb{E}_{q(x_{t}| x_0)} \left[ D_{KL} (q(x_{t-1}|x_{t}, x_0)|| p_\theta(x_{t-1}|x_{t}))\right]}}
+\end{align*}
+\]</div>
+</section>
+<section id="reconstruction-term">
+<h3>Reconstruction Term<a class="headerlink" href="#reconstruction-term" title="Link to this heading">#</a></h3>
+<p>Reconstruction term resembles the VAE reconstruction loss and can be optimized using Monte Carlo estimation.</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}_{q(x_1|x_0)} \left[ \log \; p_\theta(x_0|x_1)\right]
+\]</div>
+</section>
+<section id="prior-matching-term">
+<h3>Prior Matching Term<a class="headerlink" href="#prior-matching-term" title="Link to this heading">#</a></h3>
+<p>The prior matching term ensures the final noisy state aligns with the standard Gaussian prior. Since both <span class="math notranslate nohighlight">\(q(x_T|x_0)\)</span> and <span class="math notranslate nohighlight">\(p(x_T)\)</span> are predefined, there are no learnable parameters.</p>
+<div class="math notranslate nohighlight">
+\[
+D_{KL} (q(x_T|x_0)|| p(x_T))
+\]</div>
+</section>
+<section id="denoising-matching-term">
+<h3>Denoising Matching Term<a class="headerlink" href="#denoising-matching-term" title="Link to this heading">#</a></h3>
+<p>Denoising matching term minimize the difference between the forward and reverse denoising process by using <span class="math notranslate nohighlight">\(q(x_{t-1}|x_t,x_0)\)</span> as a ground truth for the reverse process.</p>
+<div class="math notranslate nohighlight">
+\[
+\sum_{t=2}^{T} \mathbb{E}_{q(x_{t}| x_0)} \left[ D_{KL} (q(x_{t-1}|x_{t}, x_0)|| p_\theta(x_{t-1}|x_{t}))\right]
+\]</div>
+</section>
+<hr class="docutils" />
+<section id="forward-convergence">
+<h3>Forward Convergence<a class="headerlink" href="#forward-convergence" title="Link to this heading">#</a></h3>
+<p><strong>For forward steps, Under certain assumptions <span class="math notranslate nohighlight">\(q(x_t|x_0)= N(x;0,I)\)</span>. How?</strong></p>
+<p>From our assumptions about encoder transitions:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align*}
+q(x_t|x_{t-1}) &amp;= \mathcal{N}(x_t; \sqrt{1-\beta_t}x_{t-1}, \beta_t \mathbf{I})  &amp;&amp;\quad\quad  \text{where } \{\beta_t\in (0,1)\}_{t=1}^T \text{and } \beta_1&lt;\beta_2&lt;...&lt;\beta_T\\
+&amp; or &amp;&amp; \\
+q(x_t|x_{t-1}) &amp;= \mathcal{N}(x_t; \sqrt{\alpha_t}x_{t-1}, (1-\alpha_t) \mathbf{I})
+&amp;&amp; \quad \quad \text{where } \alpha_t = 1- \beta_t \quad\{\alpha_t\in (0,1)\}_{t=1}^T \text{and } \alpha_1\geq\alpha_2\geq...\geq\alpha_T
+\end{align*}
+\end{split}\]</div>
+<hr class="docutils" />
+<p>Given <span class="math notranslate nohighlight">\(x_1 \sim \mathcal{N}(\mu_1, \sigma_1^2 \mathbf{I})\)</span> and <span class="math notranslate nohighlight">\(x_1 \sim \mathcal{N}(\mu_2, \sigma_2^2 \mathbf{I})\)</span>, then
+$<span class="math notranslate nohighlight">\(
+x_1+x_2 \sim \mathcal{N}(\mu_1  +\mu_2, (\sigma_1^2+\sigma_2^2) \mathbf{I})
+\)</span>$</p>
+<hr class="docutils" />
+<p>Also, if <span class="math notranslate nohighlight">\(\epsilon_1, \epsilon_2 \sim \mathcal{N}(0,1)\)</span>, and <span class="math notranslate nohighlight">\(x_1 = \sigma_1\epsilon_1\)</span>, <span class="math notranslate nohighlight">\(x_2 = \sigma_2\epsilon_2\)</span>, then
+$<span class="math notranslate nohighlight">\(
+x_1 + x_2 \sim \mathcal{N}(0,(\sigma_1^2 + \epsilon_2^2)\mathbf{I})\)</span> and <span class="math notranslate nohighlight">\(x_1 + x_2 = \sqrt{\sigma_1^2 + \epsilon_2^2} \epsilon
+\)</span>$</p>
+<hr class="docutils" />
+<p>Using the above expression for forward steps,</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align*} 
+q(x_1|x_0) &amp;= \mathcal{N}(x_1; \sqrt{\alpha_1}x_{0}, (1-\alpha_1) \mathbf{I})\\
+q(x_2|x_{1}) &amp;= \mathcal{N}(x_2; \sqrt{\alpha_2}x_{1}, (1-\alpha_2) \mathbf{I})
+\end{align*}
+\end{split}\]</div>
+<p>Using reparameterization trick and <span class="math notranslate nohighlight">\(\epsilon_0, \epsilon_1 \sim N(0,1)\)</span>,</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align*} 
+x_1 &amp;= \sqrt{\alpha_1}x_{0}+ \sqrt{(1-\alpha_1)} \epsilon_0 \\
+x_2 &amp;= \sqrt{\alpha_2}x_{1}+ \sqrt{(1-\alpha_2)} \epsilon_1 
+= \sqrt{\alpha_2}(\sqrt{\alpha_1}x_{0}+ \sqrt{(1-\alpha_1)} \epsilon_0)+ \sqrt{(1-\alpha_2)} \epsilon_1 
+= \sqrt{\alpha_2\alpha_1}x_{0}
++ \sqrt{\alpha_2(1-\alpha_1)} \epsilon_0+ \sqrt{(1-\alpha_2)} \epsilon_1\\
+&amp;= \sqrt{\alpha_2\alpha_1}x_{0}
++ \sqrt{(1-\alpha_2\alpha_1)} \bar{\epsilon}_0\\
+x_t &amp;= \sqrt{\alpha_t}x_{t-1}+ \sqrt{(1-\alpha_t)} \epsilon_{t-1}
+=\sqrt{\alpha_t}(\sqrt{\alpha_{t-1}}x_{t-2}+ \sqrt{(1-\alpha_{t-1})} \epsilon_{t-2})+ \sqrt{(1-\alpha_t)} \epsilon_{t-1} \\
+&amp;= \sqrt{\alpha_t\alpha_{t-1}}x_{t-2}
++ \sqrt{(1-\alpha_t\alpha_{t-1})} {\epsilon}_{t-2} 
+= ...\\
+&amp;= \sqrt{\prod_{i=1}^t \alpha_i} x_0 + \sqrt{(1-\prod_{i=1}^t \alpha_i)} {\epsilon}_{0}
+\end{align*}
+\end{split}\]</div>
+<p>Therefore, one can directly model <span class="math notranslate nohighlight">\(x_t\)</span> from <span class="math notranslate nohighlight">\(x_0\)</span> using following Gaussian distribution with using a Markovian chain:</p>
+<div class="math notranslate nohighlight">
+\[
+q(x_t|x_0) = \mathcal{N}(\sqrt{\bar{\alpha}}x_0, (1-\bar{\alpha}_t)\mathbf{I}), \quad \text{where} \; \bar{\alpha}_t = \prod_{i=1}^t \alpha_i
+\]</div>
+<hr class="docutils" />
+<p><strong>Question:</strong> What is <span class="math notranslate nohighlight">\(\lim_{T\to \infty} \bar{\alpha}_T = \lim_{T\to \infty} \prod_{t=1}^T \alpha_t = \lim_{T\to \infty} \prod_{t=1}^T (1- \beta_t)\)</span>?</p>
+<p>As <span class="math notranslate nohighlight">\(T\to \infty\)</span>, <span class="math notranslate nohighlight">\(\bar{\alpha}_T \to 0\)</span>. So <span class="math notranslate nohighlight">\(q(x_T|x_{0}) \to N(x_T; 0, I)\)</span>, which shows the convergence of the forward process to a standard Gaussian.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id1">
+<h2>Denoising Matching Term<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<div class="math notranslate nohighlight">
+\[
+\sum_{t=2}^{T} \mathbb{E}_{q(x_{t}| x_0)} \left[ D_{KL} (q(x_{t-1}|x_{t}, x_0)|| p_\theta(x_{t-1}|x_{t}))\right]
+\]</div>
+<p>For denoising match term, <span class="math notranslate nohighlight">\(p_\theta(x_{t-1}|x_t)\)</span> should be close to <span class="math notranslate nohighlight">\(q(x_{t-1}|x_t, x_0)\)</span> for each t.
+What is <span class="math notranslate nohighlight">\(q(x_{t-1}|x_{t}, x_0)\)</span>?</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align*} 
+&amp;q(x_{t-1}|x_{t}, x_0) = q(x_{t}|x_{t-1}, x_0) \frac{q(x_{t-1}| x_0)}{q(x_{t}| x_0)} 
+= q(x_{t}|x_{t-1}) \frac{q(x_{t-1}| x_0)}{q(x_{t}| x_0)} \quad \text{\{Using Markovian assumption}\}\\
+&amp; q(x_{t}| x_{t-1})= \mathcal{N}(\sqrt{\alpha_t}x_{t-1}, (1-\alpha_t)\mathbf{I}) \\
+&amp; q(x_{t-1}| x_0)= \mathcal{N}(\sqrt{\bar{\alpha}_{t-1}}x_0, (1-\bar{\alpha}_{t-1})\mathbf{I})\\
+&amp; q(x_{t}| x_0)= \mathcal{N}(\sqrt{\bar{\alpha_t}}x_0, (1-\bar{\alpha}_t)\mathbf{I})
+\end{align*}
+\end{split}\]</div>
+<p>Using above expressions,</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align*} 
+q(x_{t-1}|x_{t}, x_0) &amp;= q(x_{t}|x_{t-1}) \frac{q(x_{t-1}| x_0)}{q(x_{t}| x_0)}\\
+&amp;\propto exp\left( -\frac{1}{2} \left( 
+\frac{(x_t-\sqrt{\alpha_t}x_{t-1})}{1-\alpha_t} 
++\frac{(x_t-\sqrt{\bar{\alpha}_{t-1}}x_{0})}{1-\bar{\alpha}_{t-1}} 
+-\frac{(x_t-\sqrt{\bar{\alpha}_{t}}x_{0})}{1-\bar{\alpha}_{t}} 
+\right)\right)\\
+&amp;= ...\\
+&amp;= \mathcal{N}(\tilde{\mu}(x_t, x_0), \tilde{\sigma}_t^2 \mathbf{I}) \quad \text{\{another normal distribution\}}
+\end{align*}
+\end{split}\]</div>
+<p>where</p>
+<div class="math notranslate nohighlight">
+\[
+\tilde{\mu}(x_t, x_0) = \frac{\sqrt{\alpha}(1-\bar{\alpha}_{t-1})}{1-\bar{\alpha}_{t}} x_t + \frac{\sqrt{\bar{\alpha}_{t-1}}(1-\alpha_t)}{1-\bar{\alpha}_{t}} x_0 
+\]</div>
+<div class="math notranslate nohighlight">
+\[
+\tilde{\sigma}_t^2 = \frac{(1-\bar{\alpha}_{t-1})(1-\alpha_t)}{1-\bar{\alpha}_{t}}
+\]</div>
+<p>The mean <span class="math notranslate nohighlight">\(\tilde{\mu}\)</span> is a function of <span class="math notranslate nohighlight">\(x_t\)</span>  and <span class="math notranslate nohighlight">\(x_0\)</span>. The covariance is predefined from user defined <span class="math notranslate nohighlight">\(\beta_t\)</span> or <span class="math notranslate nohighlight">\(\alpha_t\)</span>. So, <span class="math notranslate nohighlight">\(p_\theta(x_{t-1}|x_t)\)</span> can be modeled as a Gaussian with predefined <span class="math notranslate nohighlight">\(\sigma\)</span> to match <span class="math notranslate nohighlight">\(q(x_{t-1}|x_t,x_0)\)</span>, but note that <span class="math notranslate nohighlight">\(p_\theta(x_{t-1}|x_t)\)</span> is not conditioned on <span class="math notranslate nohighlight">\(x_0\)</span>.</p>
+<hr class="docutils" />
+<p>If <span class="math notranslate nohighlight">\(p(x) = N(x; \mu_p, \sigma^2I)\)</span> and <span class="math notranslate nohighlight">\(q(x) = N(x; \mu_q, \sigma^2I)\)</span>, then</p>
+<div class="math notranslate nohighlight">
+\[
+D_{KL}(p||q) = \frac{1}{2\sigma^2} ||\mu_q-\mu_p||^2 
+\]</div>
+<hr class="docutils" />
+<p><strong>How to model the variational distribution <span class="math notranslate nohighlight">\(p_\theta(x_{t-1}|x_t)\)</span>?</strong></p>
+<p>For <span class="math notranslate nohighlight">\(q(x_{t-1}|x_{t}, x_0)= N(\tilde{\mu}(x_t, x_0), \tilde{\sigma}_t^2 I)\)</span>, the variance <span class="math notranslate nohighlight">\(\tilde{\sigma}_t^2\)</span> is not a function of <span class="math notranslate nohighlight">\(x_t\)</span> and <span class="math notranslate nohighlight">\(x_0\)</span>. Hence, we can define the variational distribution <span class="math notranslate nohighlight">\(p_\theta(x_{t-1}|x_t)\)</span> as</p>
+<div class="math notranslate nohighlight">
+\[
+p_\theta(x_{t-1}|x_{t})= N({\mu_\theta}(x_t, t), \tilde{\sigma}_t^2 I) \quad \text{where } \mu_\theta(x_t, t) \text{: mean predictor}.
+\]</div>
+<div class="math notranslate nohighlight">
+\[
+\begin{align*}
+\mathbb{E}_{q(x_{t}| x_0)} &amp; [ D_{KL} (q(x_{t-1}|x_{t}, x_0)|| p_\theta(x_{t-1}|x_{t}))] = \frac{1}{2\tilde{\sigma}_t^2} \mathbb{E}_{q(x_{t}| x_0)} \left[|| \mu_\theta(x_t,t)- \tilde{\mu}(x_t,x_0)||^2 \right] 
+\end{align*}
+\]</div>
+<hr class="docutils" />
+<section id="x-0-predictor">
+<h3><span class="math notranslate nohighlight">\(x_0\)</span> Predictor<a class="headerlink" href="#x-0-predictor" title="Link to this heading">#</a></h3>
+<p>Taking a closer look at <span class="math notranslate nohighlight">\(\tilde{\mu}(x_t,\epsilon_t)\)</span>, we can also define <span class="math notranslate nohighlight">\(\mu_\theta\)</span> as a function of <span class="math notranslate nohighlight">\(x_t\)</span> and <span class="math notranslate nohighlight">\(\tilde{x}_\theta(x_t,t)\)</span>, where <span class="math notranslate nohighlight">\(\tilde{x}_\theta(x_t,t)\)</span> is parametrized using a neural network that seeks to predict <span class="math notranslate nohighlight">\(x_0\)</span> firm the noisy <span class="math notranslate nohighlight">\(x_t\)</span> and time index <span class="math notranslate nohighlight">\(t\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align*}
+\tilde{\mu}(x_t,x_0) &amp; = \frac{\sqrt{\alpha}(1-\bar{\alpha}_{t-1})}{1-\bar{\alpha}_{t}} x_t + \frac{\sqrt{\bar{\alpha}_{t-1}}(1-\alpha_t)}{1-\bar{\alpha}_{t}} x_0\\
+\tilde{\mu}_\theta(x_t,t) &amp; = \frac{\sqrt{\alpha}(1-\bar{\alpha}_{t-1})}{1-\bar{\alpha}_{t}} x_t + \frac{\sqrt{\bar{\alpha}_{t-1}}(1-\alpha_t)}{1-\bar{\alpha}_{t}} \tilde{x}_\theta(x_t,t)\\
+\end{align*}
+\end{split}\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align*}
+\mathbb{E}_{q(x_{t}| x_0)}  [ D_{KL} (q(x_{t-1}|x_{t}, x_0)|| p_\theta(x_{t-1}|x_{t}))] &amp; =\frac{1}{2\tilde{\sigma}_t^2} \mathbb{E}_{q(x_{t}| x_0)} \left[|| \mu_\theta(x_t,t)- \tilde{\mu}(x_t,x_0)||^2 \right] \\
+&amp;=\frac{1}{2\tilde{\sigma}_t^2}
+\frac{\bar{\alpha}_{t-1}(1-\alpha_t)^2}{(1-\bar{\alpha}_t)^2}
+\mathbb{E}_{q(x_{t}| x_0)} \left[|| \hat{x}_\theta(x_t,t)- x_0||^2 \right]\\ 
+&amp;= w_t \mathbb{E}_{q(x_{t}| x_0)} \left[|| \hat{x}_\theta(x_t,t)- x_0||^2 \right]
+\end{align*}
+\end{split}\]</div>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(x_t\)</span> is sampled from <span class="math notranslate nohighlight">\(x_0\)</span>.</p></li>
+<li><p>From <span class="math notranslate nohighlight">\(x_t\)</span>, predict the expected value of <span class="math notranslate nohighlight">\(x_0\)</span> that would result in sampling <span class="math notranslate nohighlight">\(x_t\)</span> from it through the forward jump.</p></li>
+<li><p>Note that our goal is to sample <span class="math notranslate nohighlight">\(x_0\)</span> from a standard normal sample <span class="math notranslate nohighlight">\(x_T\)</span> and through latent variables <span class="math notranslate nohighlight">\(x_{T-1}, x_{T-2}, ..., x_1\)</span>. But for every <span class="math notranslate nohighlight">\(x_t\)</span>, we directly predict the expected value of <span class="math notranslate nohighlight">\(x_0\)</span> from <span class="math notranslate nohighlight">\(x_t\)</span>.</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="epsilon-t-predictor">
+<h3><span class="math notranslate nohighlight">\(\epsilon_t\)</span> Predictor<a class="headerlink" href="#epsilon-t-predictor" title="Link to this heading">#</a></h3>
+<p><strong>From the forward jump:</strong>  <span class="math notranslate nohighlight">\(x_t = \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1-\bar{\alpha}_t}\epsilon_t\)</span>.
+If <span class="math notranslate nohighlight">\(x_t\)</span> and <span class="math notranslate nohighlight">\(x_0\)</span> are given, define <span class="math notranslate nohighlight">\(\epsilon_t\)</span> as</p>
+<div class="math notranslate nohighlight">
+\[ 
+\epsilon_t = \frac{1}{\sqrt{1-\bar{\alpha}_t}}x_t- \frac{\sqrt{\bar{\alpha}_t}}{\sqrt{1-\bar{\alpha}_t}}x_0 
+\]</div>
+<p>One can also rewrite <span class="math notranslate nohighlight">\(\tilde{\mu}(x_t,x_0)\)</span> as a function of <span class="math notranslate nohighlight">\(x_t\)</span> and <span class="math notranslate nohighlight">\(\epsilon_t\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[
+\begin{align*}
+\tilde{\mu}(x_t,\epsilon_t) &amp; = \frac{\sqrt{\alpha}(1-\bar{\alpha}_{t-1})}{1-\bar{\alpha}_{t}} x_t + \frac{\sqrt{\bar{\alpha}_{t-1}}(1-\alpha_t)}{1-\bar{\alpha}_{t}} x_0= \frac{1}{\sqrt{{\alpha}_{t}}} \left( x_t - \frac{1- {\alpha}_{t}}{\sqrt{1-\bar{\alpha}_{t}}}\epsilon_t\right)
+\end{align*}
+\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align*}
+\mathbb{E}_{q(x_{t}| x_0)} [ D_{KL} (q(x_{t-1}|x_{t}, x_0)|| p_\theta(x_{t-1}|x_{t}))] &amp;=\frac{1}{2\tilde{\sigma}_t^2} \mathbb{E}_{q(x_{t}| x_0)} \left[|| \mu_\theta(x_t,t)- \tilde{\mu}(x_t,x_0)||^2 \right] \\
+&amp;=\frac{1}{2\tilde{\sigma}_t^2}
+\frac{(1-\bar{\alpha}_{t})^2}{\alpha_t(1-\bar{\alpha}_t)}
+\mathbb{E}_{q(x_{t}| x_0)} \left[|| \hat{\epsilon}_\theta(x_t,t)- \epsilon_t||^2 \right]\\ 
+&amp;= w'_t \mathbb{E}_{q(x_{t}| x_0)} \left[|| \hat{\epsilon}_\theta(x_t,t)- \epsilon_t||^2 \right]
+\end{align*}
+\end{split}\]</div>
+<p>From <span class="math notranslate nohighlight">\(x_t\)</span>, predict the expected value of <span class="math notranslate nohighlight">\(\epsilon_t\)</span> that would result in a sampling <span class="math notranslate nohighlight">\(x_t\)</span> from <span class="math notranslate nohighlight">\(x_0\)</span> through the forward jump.\
+Although all three interpretations: mean prediction, <span class="math notranslate nohighlight">\(x_0\)</span> prediction, and noise prediction, are equivalent, in practice, <span class="math notranslate nohighlight">\(\epsilon_t\)</span> predictor is used since the <span class="math notranslate nohighlight">\(\epsilon_t\)</span> are well normalized and scaled standard normal samples, which makes it easier to train the neural network.</p>
+<p>For DDPM ELBO,</p>
+<ul class="simple">
+<li><p>The reconstruction term (<span class="math notranslate nohighlight">\(-\mathbb{E}_{q(x_1|x_0)} \left[ \log \; p_\theta(x_0|x_1)\right]\)</span> is same as with VAEs and it is also negligible compared to other loss terms.</p></li>
+<li><p>The prior matching term (<span class="math notranslate nohighlight">\( D_{KL} (q(x_T|x_0)|| p(x_T))\)</span>) converges to zero when <span class="math notranslate nohighlight">\(T\to \infty\)</span>.</p></li>
+<li><p>The denoising matching term (<span class="math notranslate nohighlight">\(\sum_{t=2}^{T} \mathbb{E}_{q(x_{t}| x_0)} \left[ D_{KL} (q(x_{t-1}|x_{t}, x_0)|| p_\theta(x_{t-1}|x_{t}))\right]\)</span>) is the only prominent term, which can also be written as</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}_{t&gt;1,q(x_{t}| x_0)} \left[ D_{KL} (q(x_{t-1}|x_{t}, x_0)|| p_\theta(x_{t-1}|x_{t}))\right]
+\]</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="training-ddpm">
+<h2>Training DDPM<a class="headerlink" href="#training-ddpm" title="Link to this heading">#</a></h2>
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}_{t&gt;1,q(x_{t}| x_0)} \left[ D_{KL} (q(x_{t-1}|x_{t}, x_0)|| p_\theta(x_{t-1}|x_{t}))\right]
+\]</div>
+<p><strong>Repeat:</strong></p>
+<ol class="arabic simple">
+<li><p>Take a random <span class="math notranslate nohighlight">\(x_0\)</span>.</p></li>
+<li><p>Sample <span class="math notranslate nohighlight">\(t\sim \mathcal{U}(\{1,...,T\})\)</span>.</p></li>
+<li><p>Sample <span class="math notranslate nohighlight">\(\epsilon_t \sim \mathcal{N}(0,\mathbf{I})\)</span>.</p></li>
+<li><p>Compute <span class="math notranslate nohighlight">\(x_t = \sqrt{\bar{\alpha}_t} x_0 + \sqrt{1-\bar{\alpha}_t} \epsilon_t  \)</span></p></li>
+<li><p>Take a gradient descent step on <span class="math notranslate nohighlight">\(\nabla_\theta|| \hat{\epsilon}_\theta(x_t,t)-\epsilon_t||^2\)</span>.</p></li>
+</ol>
+</section>
+<section id="reverse-process-ddpm-generation">
+<h2>Reverse Process (DDPM): Generation<a class="headerlink" href="#reverse-process-ddpm-generation" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p>Sample <span class="math notranslate nohighlight">\(x_t \sim \mathcal{N}(0,\mathbf{I})\)</span>.</p></li>
+<li><p>For <span class="math notranslate nohighlight">\(t=T,...,1,\)</span> repeat:</p>
+<ul class="simple">
+<li><p>Compute <span class="math notranslate nohighlight">\(\tilde{\mu}= \frac{1}{\sqrt{\bar{\alpha}_{t}}} \left( x_t - \frac{1- {\alpha}_{t}}{\sqrt{1-\bar{\alpha}_{t}}}\tilde{\epsilon}_\theta(x_t,t)\right)\)</span>.</p></li>
+<li><p>Sample <span class="math notranslate nohighlight">\(z_t \sim \mathcal{N}(0,\mathbf{I})\)</span></p></li>
+<li><p>Compute <span class="math notranslate nohighlight">\(x_{t-1} = \bar{\mu}+ \bar{\sigma} z_t\)</span>.</p></li>
+</ul>
+</li>
+</ol>
+<p>At each time step <span class="math notranslate nohighlight">\(t\)</span>, given <span class="math notranslate nohighlight">\(x_t\)</span>, <span class="math notranslate nohighlight">\(\epsilon_t\)</span> is predicted. The prediction of <span class="math notranslate nohighlight">\(x_0\)</span> can be computed from <span class="math notranslate nohighlight">\(x_t\)</span> and <span class="math notranslate nohighlight">\(\epsilon_t\)</span>.
+Given <span class="math notranslate nohighlight">\(x_t\)</span> and the noise prediction <span class="math notranslate nohighlight">\(\bar{\epsilon}_\theta(x_t,t)\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+ x_{0|t} = \frac{1}{\sqrt{\bar{\alpha}_t}}( 1 - \sqrt{1-\bar{\alpha}_t} \hat\epsilon_\theta(x_t,t)) 
+\]</div>
+</section>
+<hr class="docutils" />
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Ho, Jonathan, Ajay Jain, and Pieter Abbeel. “Denoising diffusion probabilistic models.” Advances in neural information processing systems 33 (2020): 6840-6851.</p></li>
+<li><p>Luo, Calvin. “Understanding diffusion models: A unified perspective.” arXiv preprint arXiv:2208.11970 (2022).</p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./content"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="genai_before_diffusion.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Generative Models Before Diffusion</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="codes/code_1_md.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Code: Diffusion from Scratch</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#elbo-for-diffusion-model">ELBO for Diffusion model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#consistency-term">Consistency term</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reconstruction-term">Reconstruction Term</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#prior-matching-term">Prior Matching Term</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#denoising-matching-term">Denoising Matching Term</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forward-convergence">Forward Convergence</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Denoising Matching Term</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#x-0-predictor"><span class="math notranslate nohighlight">\(x_0\)</span> Predictor</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#epsilon-t-predictor"><span class="math notranslate nohighlight">\(\epsilon_t\)</span> Predictor</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#training-ddpm">Training DDPM</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reverse-process-ddpm-generation">Reverse Process (DDPM): Generation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reference">Reference</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Sumukh
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
