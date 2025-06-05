@@ -1,0 +1,8 @@
+title: Diffusion Based GenAI Tutorial
+author: Sumukh 
+logo: images/Logo.png
+
+parse:
+  myst_enable_extensions:
+    - amsmath
+    - dollarmath

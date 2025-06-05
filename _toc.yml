@@ -1,0 +1,11 @@
+format: jb-book
+root: intro
+chapters:
+  - file: content/introduction
+  - file: content/genai_before_diffusion
+  - file: content/ddpm
+  - file: content/codes/code_1_md
+  # - file: content/score_matching
+  # - file: content/ddim
+  # - file: content/conclusion
+  # - file: content/references
