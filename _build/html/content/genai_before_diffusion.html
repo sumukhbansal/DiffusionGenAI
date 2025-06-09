@@ -1,0 +1,653 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Generative Models Before Diffusion &#8212; Diffusion Based GenAI Tutorial</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'content/genai_before_diffusion';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Denoising Diffusion Probabilistic Models (DDPM)" href="ddpm.html" />
+    <link rel="prev" title="Introduction" href="introduction.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/Logo.png" class="logo__image only-light" alt="Diffusion Based GenAI Tutorial - Home"/>
+    <script>document.write(`<img src="../_static/Logo.png" class="logo__image only-dark" alt="Diffusion Based GenAI Tutorial - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    Diffusion-Based Generative AI
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Generative Models Before Diffusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ddpm.html">Denoising Diffusion Probabilistic Models (DDPM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="codes/code_1_md.html">Code: Diffusion from Scratch</a></li>
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="ddim.html">Denoising Diffusion Implicit Models (DDIM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="score_matching.html">Score Based Methods</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/content/genai_before_diffusion.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Generative Models Before Diffusion</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#auto-encoders">Auto-Encoders</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generative-adversarial-networks">Generative Adversarial Networks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#likelihood-based-generative-models">Likelihood-Based Generative Models</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#evidence-lower-bound-elbo">Evidence Lower Bound (ELBO)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#variational-autoencoders">Variational Autoencoders</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hierarchical-vaes">Hierarchical VAEs</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="generative-models-before-diffusion">
+<h1>Generative Models Before Diffusion<a class="headerlink" href="#generative-models-before-diffusion" title="Link to this heading">#</a></h1>
+<p>The goal of generative models is to synthesize new data samples from an underlying data distribution, typically defined through a set of training examples. From a statistical standpoint, if a probability density function (PDF) describes the data, then new samples can be drawn by sampling from this distribution. This is often done by converting the PDF to a cumulative distribution function (CDF), sampling a point uniformly from <span class="math notranslate nohighlight">\([0, 1]\)</span>, and mapping it through the inverse CDF.</p>
+<p>Thus, the essence of generative modeling is to learn a probability distribution <span class="math notranslate nohighlight">\(p(x)\)</span> that best represents a given dataset <span class="math notranslate nohighlight">\({x_1, x_2, \ldots, x_n}\)</span>. A common strategy is to assume a simple prior distribution <span class="math notranslate nohighlight">\(p(z)\)</span>, such as a standard Gaussian <span class="math notranslate nohighlight">\(\mathcal{N}(0, I)\)</span>, and learn a mapping between <span class="math notranslate nohighlight">\(p(z)\)</span> and <span class="math notranslate nohighlight">\(p(x)\)</span>. This mapping is typically modeled using neural networks, as in autoencoders, GANs, VAEs, flow models, or diffusion models.</p>
+<hr class="docutils" />
+<section id="auto-encoders">
+<h2>Auto-Encoders<a class="headerlink" href="#auto-encoders" title="Link to this heading">#</a></h2>
+<p>Autoencoders provide a simple way to compress complex data into a lower-dimensional latent space. However, they do not enforce any structure on this space. As a result, not all latent points correspond to valid data samples, making the latent space sparse and hard to navigate.</p>
+</section>
+<hr class="docutils" />
+<section id="generative-adversarial-networks">
+<h2>Generative Adversarial Networks<a class="headerlink" href="#generative-adversarial-networks" title="Link to this heading">#</a></h2>
+<p>GANs were motivated by the concept of adversarial perturbations that can fool classifiers. A GAN consists of a generator <span class="math notranslate nohighlight">\(G\)</span> and a discriminator <span class="math notranslate nohighlight">\(D\)</span> trained simultaneously. The generator learns to create data that can fool the discriminator, which in turn learns to distinguish between real and generated data. The training objective is:</p>
+<div class="math notranslate nohighlight">
+\[
+\begin{equation}
+\underset{G}{min} \; \underset{D}{max}(D,G)= \mathbb{E}_{x \sim p(x)} [\log(D(x))] + \mathbb{E}_{z \sim p(Z)} [ \log(1-D(G(z)) ]
+\end{equation}
+\]</div>
+<p>There are challenges in training GANs:</p>
+<ul class="simple">
+<li><p>Mode collapse: the generator captures only a subset of the data distribution.</p></li>
+<li><p>Training Instability: if the discriminator becomes too strong and can easily differentiate between real and fake examples, the generator receives negligible gradients and the training becomes very slow.</p></li>
+</ul>
+</section>
+<section id="likelihood-based-generative-models">
+<h2>Likelihood-Based Generative Models<a class="headerlink" href="#likelihood-based-generative-models" title="Link to this heading">#</a></h2>
+<p><strong>Can a generative model be trained without solving a minimax problem?</strong></p>
+<p>Let the mapping from latent variable <span class="math notranslate nohighlight">\(z\)</span> to data <span class="math notranslate nohighlight">\(x\)</span> be represented as <span class="math notranslate nohighlight">\(p(x|z)\)</span>. The marginal likelihood of data can be expressed as:</p>
+<div class="math notranslate nohighlight">
+\[
+p(x)=\int p(x,z)dz = \int p(x|z)p(z)dz
+\]</div>
+<p>or using Bayes’ theorem:</p>
+<div class="math notranslate nohighlight">
+\[
+p(x)=\frac{p(x,z)}{p(z|x)}
+\]</div>
+<p>However, directly maximizing <span class="math notranslate nohighlight">\(p(x)\)</span> is computationally difficult due to:</p>
+<ul class="simple">
+<li><p>High-dimensional integration (e.g., using Monte Carlo methods): integrating over complex distributions using methods, such as Monte Carlo, is very expensive for high-dimensional data.</p></li>
+<li><p>Unknown posterior <span class="math notranslate nohighlight">\(p(z|x)\)</span>: Or it requires access to the latent encoder distribution <span class="math notranslate nohighlight">\(p(z|x)\)</span>, which is not known.</p></li>
+</ul>
+<p>Hence, the underlying question is “How can one maximize the marginal probability <span class="math notranslate nohighlight">\(p(x)\)</span>, given example data <span class="math notranslate nohighlight">\(x\)</span>?”.</p>
+</section>
+<hr class="docutils" />
+<section id="evidence-lower-bound-elbo">
+<h2>Evidence Lower Bound (ELBO)<a class="headerlink" href="#evidence-lower-bound-elbo" title="Link to this heading">#</a></h2>
+<p>To address this, a variational approximation <span class="math notranslate nohighlight">\(q_\phi(z|x)\)</span> to the posterior <span class="math notranslate nohighlight">\(p(z|x)\)</span> is introduced and a tractable lower bound is drived:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align*} 
+\log p(x) &amp;= \log \int p(x,z)dz = \log \int p(x,z) \frac{q_\phi(z|x)}{q_\phi(z|x)}dz = \log \; \int q_\phi(z|x) \frac{p(x,z)}{q_\phi(z|x)}dz\\
+&amp;= \log \; \mathbb{E}_{q_\phi(z|x)} \left[ \frac{p(x,z)}{q_\phi(z|x)}\right] \quad \{\text{from the definition of expectation} \}
+\end{align*}
+\end{split}\]</div>
+<p>Where <span class="math notranslate nohighlight">\(q_\phi\)</span> is a proxy distribution.</p>
+<p>Using Jensen’s inequality (for any convex function <span class="math notranslate nohighlight">\(f\)</span>, <span class="math notranslate nohighlight">\(f(\mathbb{E}_{p_{(x)}}[x]\leq \mathbb{E}_{p_{(x)}}[f(x)]\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+\begin{align*} 
+\log p(x) \geq \mathbb{E}_{q_\phi(z|x)} \left[\log \frac{p(x,z)}{q_\phi(z|x)}\right] = \textbf{ELBO}
+\end{align*}
+\]</div>
+<p>Also, equivalently:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align*}
+\log p(x) &amp;= \mathbb{E}_{q_\phi(z|x)} \left[\log \frac{p(x,z)}{q_\phi(z|x)}\right] + D_{KL}(q_\phi(z|x)||p(z||x)) \\
+\log p(x) &amp;= \textbf{ELBO} + D_{KL}(q_\phi(z|x)||p(z||x))
+\end{align*}
+\end{split}\]</div>
+<p>Since KL divergence is non-negative, ELBO is a valid lower bound. Maximizing ELBO is thus equivalent to minimizing the KL divergence between <span class="math notranslate nohighlight">\(q_\phi(z|x)\)</span> and <span class="math notranslate nohighlight">\(p(z|x)\)</span>.</p>
+<p><strong>Evidence Lower Bound (ELBO):</strong></p>
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}_{q_\phi(z|x)} \left[\log \frac{p(x,z)}{q_\phi(z|x)}\right]
+\]</div>
+</section>
+<hr class="docutils" />
+<section id="variational-autoencoders">
+<h2>Variational Autoencoders<a class="headerlink" href="#variational-autoencoders" title="Link to this heading">#</a></h2>
+<p>In VAEs, the ELBO is directly maximized using variational inference. The variational posterior <span class="math notranslate nohighlight">\(q_\phi(z|x)\)</span> and decoder <span class="math notranslate nohighlight">\(p_\theta(x|z)\)</span> are parameterized by neural networks and the parameters <span class="math notranslate nohighlight">\(\phi\)</span> of the distribution <span class="math notranslate nohighlight">\(q_\phi(z|x)\)</span> are optimized for the best distribution among a family of distributions.</p>
+<p>For VAE, the ELBO (Evidence Lower Bound) can be decomposed further as follows:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align*} 
+\mathbb{E}_{q_\phi(z|x)} \left[ \log \frac{p(x,z)}{q_\phi(z|x)}\right] = \mathbb{E}_{q_\phi(z|x)} \left[\log \frac{p_\theta(x|z) p(z)}{q_\phi(z|x)}\right] &amp;= \mathbb{E}_{q_\phi(z|x)} \left[ \log \; p_\theta(x|z) \right] -
+\mathbb{E}_{q_\phi(z|x)} \left[\log \frac{q_\phi(z|x)}{p(z)}\right]\\
+&amp;=\underset{\textbf{reconstruction term}}{\underbrace{\mathbb{E}_{q_\phi(z|x)} \left[\log \; p_\theta(x|z)\right]}} - \underset{\textbf{prior matching}}{\underbrace{
+D_{KL} \left( q_\phi(z|x) \; ||  \; p(z) \right)}}
+\end{align*}
+\end{split}\]</div>
+<p>In VAEs, an intermediate bottleneck distribution <span class="math notranslate nohighlight">\(q_\phi(z|x)\)</span> is defined — this acts as the <strong>encoder</strong>, transforming inputs into a distribution over possible latents. A deterministic <strong>decoder</strong> function <span class="math notranslate nohighlight">\(p_\theta(x|z)\)</span> is then learned to map a latent vector <span class="math notranslate nohighlight">\(z\)</span> into a reconstructed observation <span class="math notranslate nohighlight">\(x\)</span>.</p>
+<p>The parameters, <span class="math notranslate nohighlight">\(\theta\)</span> and <span class="math notranslate nohighlight">\(\phi\)</span>, are optimized jointly to maximize the ELBO. A common choice for the encoder is a multivariate Gaussian with diagonal covariance and a standard Gaussian for the prior <span class="math notranslate nohighlight">\(p(z)\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align*} 
+q_\phi(z|x) &amp;= \mathcal{N}(z;\mu_\phi(x), \sigma_\phi^2(x)\mathbf{I})\\
+p(z) &amp;=  \mathcal{N}(z;0,\mathbf{I})
+\end{align*}
+\end{split}\]</div>
+<p>In summary,</p>
+<ul class="simple">
+<li><p>From input x, encoder predicts <span class="math notranslate nohighlight">\(\mu_\phi(x), \sigma^2_\phi(x)\)</span></p></li>
+<li><p>The decoder takes a sample <span class="math notranslate nohighlight">\(z\sim N(z;\mu_\phi(x), \sigma_\phi^2(x)I\)</span>, which can be seen as a reprametrization of the standard normal distribution.
+<img alt="Summary of VAE." src="../_images/vae_table_v1.png" /></p></li>
+</ul>
+<p>For training, maximize ELBO:</p>
+<div class="math notranslate nohighlight">
+\[
+\underset{\theta \; \phi}{\arg\max} \; \mathbb{E}_{q_\phi(z|x)} \left[\log \; p_\theta(x|z)\right] -
+D_{KL} \left( q_\phi(z|x) \; ||  \; p(z) \right) 
+\]</div>
+<p>The KL divergence term can be computed analytically and the reconstruction term can be approximated using Monte Carlo estimate:</p>
+<div class="math notranslate nohighlight">
+\[
+\underset{\theta \; \phi}{\arg\max} \;  \sum_{i=1}  \left[\log \; p_\theta(x|z^{(i)})\right] - D_{KL} \left( q_\phi(z|x) \; ||  \; p(z) \right), 
+\quad \quad z^{(i)}\sim q_\phi(z|x)
+\]</div>
+<p>Sample a latent variable <span class="math notranslate nohighlight">\(z \sim q_\phi(z|x) = \mathcal{N}(z;\mu_\phi(x), \sigma_\phi^2(x) \mathbf{I})\)</span>,
+using the reparameterization: <span class="math notranslate nohighlight">\(z = \mu_\phi(x) + \sigma_\phi(x) \cdot \epsilon, \quad \epsilon \sim \mathcal{N}(0, \mathbf{I})\)</span>. The reparametrization provides a link between encoder and decoder where the samples are not just samples from standard normal distribution but samples are reparametrized according to the mean and variance predicted from the encoder.
+Using <span class="math notranslate nohighlight">\(p_\theta(x|z) = \mathcal{N}(x;D_\theta(z), \sigma^2 \mathbf{I})\)</span>,</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align*}
+\log \; p_\theta (x|z^{(i)}) &amp;=  \log \; \left( \frac{1}{\sqrt{(2 \pi \sigma^2)^d}} exp \; \left(- \frac{||x-D_\theta(z)||^2}{2\sigma^2}\right)\right) \\
+&amp;=  - \frac{1}{2\sigma^2} ||x-D_\theta(z)||^2 - \log \; \sqrt{(2\pi \sigma^2)^d}
+\end{align*}
+\end{split}\]</div>
+<p>Here  <span class="math notranslate nohighlight">\(D_\theta(z)\)</span> is the reconstructed <span class="math notranslate nohighlight">\(\hat{x}\)</span>, and <span class="math notranslate nohighlight">\(d\)</span> is the data dimension. The term <span class="math notranslate nohighlight">\(\log \; \sqrt{(2\pi \sigma^2)^d}\)</span> is constant. So, only the reconstruction term <span class="math notranslate nohighlight">\(||x-D_\theta(z)||^2\)</span> contributes.</p>
+<p>So, the training steps are as follows:</p>
+<ul class="simple">
+<li><p>Feed a data point <span class="math notranslate nohighlight">\(x\)</span> to the encoder to predict <span class="math notranslate nohighlight">\(\mu_\phi(x)\)</span> and <span class="math notranslate nohighlight">\(\sigma_\phi^2(x)\)</span>.</p></li>
+<li><p>Sample a latent variable <span class="math notranslate nohighlight">\(z\)</span> from <span class="math notranslate nohighlight">\(q_\phi(z|x) = N(z;\mu_\phi(x), \sigma_\phi^2(x)I\)</span>.</p></li>
+<li><p>Feed <span class="math notranslate nohighlight">\(z\)</span> to the decoder to predict <span class="math notranslate nohighlight">\(\hat{x} = D_\theta(z)\)</span>.</p></li>
+<li><p>Compute the gradient decent through the negative ELBO.</p></li>
+</ul>
+<p>The above sampling for training is differentiable as <span class="math notranslate nohighlight">\(z=\mu_\phi(x)+ \sigma_\phi(x) \epsilon\)</span>, where <span class="math notranslate nohighlight">\(\epsilon \sim N(0,I)\)</span>.
+<strong>For generation</strong>,</p>
+<ul class="simple">
+<li><p>Sample a latent variable <span class="math notranslate nohighlight">\(z\)</span> from <span class="math notranslate nohighlight">\(p(z) = N(z; 0, I)\)</span>.</p></li>
+<li><p>Feed z to the decoder to predict <span class="math notranslate nohighlight">\(\hat{x} = D_\theta (z)\)</span>.</p></li>
+</ul>
+<p>There are several limitations of VAEs.</p>
+<ul class="simple">
+<li><p>In place of <span class="math notranslate nohighlight">\(\log \; p(x)\)</span>, ELBO is maximized. Hence, there is gap between the two. The lower bound is tight when <span class="math notranslate nohighlight">\(q_\phi(z|x)\)</span> is identical to the true posterior distribution <span class="math notranslate nohighlight">\(p(z|x)\)</span>.</p></li>
+<li><p>Using standard normal distribution as a posterior distribution <span class="math notranslate nohighlight">\(p(z|x)\)</span> might not be sufficient to model complex distributions.</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="hierarchical-vaes">
+<h2>Hierarchical VAEs<a class="headerlink" href="#hierarchical-vaes" title="Link to this heading">#</a></h2>
+<p><strong>Is there exists a better method for approximating the posterior distribution in a variational way?</strong><br />
+One of the ways is to use Hierarchical VAEs. The idea is to have a sequence of latent variables where a Markovian process is considered between two latent variables.
+<img alt="A Markovian Hierarchical Variational Autoencoder with  hierarchical latents. The generativeprocess is modeled as a Markov chain, where each latent  is generated only from the previous latent ." src="../_images/hierachical_vae.png" /></p>
+<p>For this Markovian process, join distribution is given by:</p>
+<div class="math notranslate nohighlight">
+\[
+p_\theta(x_{0:T}) = p_\theta(x_T) \prod_{t=1}^T p_\theta(x_{t-1}|x_t)
+\]</div>
+<p>The variational posterior is given as:</p>
+<div class="math notranslate nohighlight">
+\[
+q_\phi(x_{1:T}|x_0)= \prod_{t=1}^{T} q_\phi(x_t|x_{t-1})
+\]</div>
+<p>While each <span class="math notranslate nohighlight">\(q_\phi(x_{t+1}|x_{t})\)</span> is a normal distribution, <span class="math notranslate nohighlight">\(q_\phi(x_T|x_{0})\)</span> can be a more complex distribution. A similar expression for ELBO can be derived for hierarchical case as well.</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./content"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="introduction.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Introduction</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="ddpm.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Denoising Diffusion Probabilistic Models (DDPM)</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#auto-encoders">Auto-Encoders</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generative-adversarial-networks">Generative Adversarial Networks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#likelihood-based-generative-models">Likelihood-Based Generative Models</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#evidence-lower-bound-elbo">Evidence Lower Bound (ELBO)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#variational-autoencoders">Variational Autoencoders</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hierarchical-vaes">Hierarchical VAEs</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Sumukh
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

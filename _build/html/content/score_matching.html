@@ -1,0 +1,617 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Score Based Methods &#8212; Diffusion Based GenAI Tutorial</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'content/score_matching';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Denoising Diffusion Implicit Models (DDIM)" href="ddim.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/Logo.png" class="logo__image only-light" alt="Diffusion Based GenAI Tutorial - Home"/>
+    <script>document.write(`<img src="../_static/Logo.png" class="logo__image only-dark" alt="Diffusion Based GenAI Tutorial - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    Diffusion-Based Generative AI
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="genai_before_diffusion.html">Generative Models Before Diffusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ddpm.html">Denoising Diffusion Probabilistic Models (DDPM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="codes/code_1_md.html">Code: Diffusion from Scratch</a></li>
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="ddim.html">Denoising Diffusion Implicit Models (DDIM)</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Score Based Methods</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/content/score_matching.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Score Based Methods</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#score-function">Score Function</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#langevin-dynamics">Langevin Dynamics</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#score-matching">Score Matching</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#noise-conditional-score-based-model">Noise-Conditional Score-Based Model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-choose-the-variance-sigma-for-gaussian-mixture-models">How to choose the variance <span class="math notranslate nohighlight">\(\sigma\)</span> for Gaussian mixture models?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#issues-underlying-diffusion-models">Issues Underlying Diffusion Models</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reference">Reference</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="score-based-methods">
+<h1>Score Based Methods<a class="headerlink" href="#score-based-methods" title="Link to this heading">#</a></h1>
+<p>While DDPM and DDIM use discrete-time formulations of the diffusion process, an alternative view models diffusion as a continuous-time stochastic differential equation (SDE).</p>
+<section id="score-function">
+<h2>Score Function<a class="headerlink" href="#score-function" title="Link to this heading">#</a></h2>
+<p>(Stein) Score is the gradient of the log-likelihood function with respect to a data point:</p>
+<div class="math notranslate nohighlight">
+\[
+\nabla_x \log p(x)
+\]</div>
+<p>Score of the conditional distribution <span class="math notranslate nohighlight">\(q(x_t|x_0)\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+\nabla_{x_t} \log q(x_t|x_0)
+\]</div>
+<p>Relationship between <span class="math notranslate nohighlight">\(\nabla_{x_t} \log q(x_t|x_0)\)</span> and <span class="math notranslate nohighlight">\(\epsilon_t\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align*}
+q(x_t|x_0) &amp;= \mathcal{N}(\sqrt{\bar{\alpha}_t}x_0, (1-\bar\alpha_t)\mathbf{I})\\
+\nabla_{x_t} \log q(x_t|x_0) &amp;=  \nabla_{x_t} \left(
+-\frac{||x_t-\sqrt{\bar{\alpha}_t}x_0||^2}{2(1-\bar\alpha_t)}\right) =-\frac{x_t-\sqrt{\bar{\alpha}_t}x_0}{1-\bar\alpha_t}\\
+&amp;=-\frac{\epsilon_t}{\sqrt{1-\bar\alpha_t}} \quad\left[ \text{as} \quad \epsilon_t = \frac{x_t-\sqrt{\bar{\alpha}_t}x_0}{\sqrt{1-\bar\alpha_t}}\right]
+\end{align*}
+\end{split}\]</div>
+<p><strong>The noise predictor <span class="math notranslate nohighlight">\(\hat\epsilon_\theta(x_t,t)\)</span> can be interpreted as predicting the score <span class="math notranslate nohighlight">\(\nabla_{x_t} \log q(x_t|x_0)\)</span> up to a scaling factor.</strong></p>
+<hr class="docutils" />
+<p><strong>Tweedie’s Formula</strong> gives an estimate of the true mean of a normal distribution from the
+samples drawn from it.</p>
+<div class="math notranslate nohighlight">
+\[
+\text{for }x\sim p(x) = \mathcal{N}(x; \mu, \Sigma), \quad \mathbb{E}[\mu|x] = x+ \Sigma \nabla_x \log p(x)
+\]</div>
+<p>Applying Tweedie’s Formula for <span class="math notranslate nohighlight">\(q(x_t|x_0)\)</span>,
+$<span class="math notranslate nohighlight">\(
+\mathbb{E}[\mu|x] = x+ (1-\bar\alpha_t) \nabla_x \log q(x_t|x_0) = \sqrt{\bar\alpha_t}x_0
+\)</span>$</p>
+<div class="math notranslate nohighlight">
+\[
+\nabla_{x_t} \log q(x_t|x_0) =-\frac{x_t-\sqrt{\bar{\alpha}_t}x_0}{1-\bar\alpha_t}=-\frac{\epsilon_t}{\sqrt{1-\bar\alpha_t}} 
+\]</div>
+</section>
+<hr class="docutils" />
+<section id="langevin-dynamics">
+<h2>Langevin Dynamics<a class="headerlink" href="#langevin-dynamics" title="Link to this heading">#</a></h2>
+<p>Langevin dynamics enables sampling from a distribution when only the score function is known. Even without knowing <span class="math notranslate nohighlight">\(q(x)\)</span>, if we have the score function <span class="math notranslate nohighlight">\(\nabla_x \log q(x)\)</span>, we can sample the distribution <span class="math notranslate nohighlight">\(q(x)\)</span> using Langevin dynamics via following steps:</p>
+<ul>
+<li><p>Initialize <span class="math notranslate nohighlight">\(x \sim p_{prior}(x)\)</span>.</p></li>
+<li><p>For <span class="math notranslate nohighlight">\(T\)</span> steps:</p>
+<div class="math notranslate nohighlight">
+\[ 
+    x \leftarrow x + \eta \nabla_x \log q(x) + \sqrt{2\eta \epsilon}, \quad \epsilon\sim \mathcal{N}(0,\mathbf{I)})
+    \]</div>
+</li>
+<li><p>It converges to <span class="math notranslate nohighlight">\(q(x)\)</span> when <span class="math notranslate nohighlight">\(\eta \to 0\)</span> and <span class="math notranslate nohighlight">\(T\to\infty\)</span>.
+Note: only score information <span class="math notranslate nohighlight">\( \nabla_{x}\log q(x)\)</span> is used and not the distribution <span class="math notranslate nohighlight">\(q(x)\)</span> itself. Langevin Dynamics looks very similar to reverse process in DDPM.</p></li>
+</ul>
+</section>
+<section id="score-matching">
+<h2>Score Matching<a class="headerlink" href="#score-matching" title="Link to this heading">#</a></h2>
+<p>One possible way to encode the data distribution <span class="math notranslate nohighlight">\(q(x)\)</span> into a neural network is to train a score prediction network <span class="math notranslate nohighlight">\(s_\theta(x)\)</span> using the following loss function:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}_{x\sim q(x)} \left[ || s_\theta(x)- \nabla_x \log q(x)||^2 \right]
+\]</div>
+<p>This is similar to noise prediction network.</p>
+</section>
+<hr class="docutils" />
+<section id="noise-conditional-score-based-model">
+<h2>Noise-Conditional Score-Based Model<a class="headerlink" href="#noise-conditional-score-based-model" title="Link to this heading">#</a></h2>
+<p>How do we compute <span class="math notranslate nohighlight">\(\nabla_x \log q(x)\)</span> when we only have samples of <span class="math notranslate nohighlight">\(q(x)\)</span>?
+Let <span class="math notranslate nohighlight">\(q(x) =q(x_0)\)</span>.
+If we only have samples from <span class="math notranslate nohighlight">\(q(x)\)</span>, we can approximate it using a mixture of Gaussians:</p>
+<div class="math notranslate nohighlight">
+\[
+q(x_t)= \int q(x_0) q(x_t|x_0)dx, \quad \text{where } q(x_t|x_0)= \mathcal{N}(x_t; x_0, \sigma_t^2 \mathbf{I})
+\]</div>
+<p>Now, the sampling from <span class="math notranslate nohighlight">\(q(x_t)\)</span> is the same as:</p>
+<ul class="simple">
+<li><p>Sampling from <span class="math notranslate nohighlight">\(q(x_0)\)</span> (taking a random <span class="math notranslate nohighlight">\(x_0\)</span>) and then</p></li>
+<li><p>Sampling from <span class="math notranslate nohighlight">\(q(x_t|x_0)= \mathcal{N}(x_t; x_0, \sigma_t^2 \mathbf{I})\)</span></p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align*}
+\mathbb{E}_{x_0\sim q(x_0)} \left[ || s_\theta(x)- \nabla_x \log q(x)||^2 \right] &amp;=\mathbb{E}_{x_0\sim q(x_0),x_t\sim q(x_t|x_0)} \left[|| s_\theta(x_t)- \nabla_x \log q(x_t|x_0)||^2 \right]\\
+&amp;=\mathbb{E}_{x_0\sim q(x_0),x_t\sim q(x_t|x_0)} \left[|| s_\theta(x_t) + \sqrt{1-\bar\alpha_t} \epsilon_t||^2 \right]
+\end{align*}
+\end{split}\]</div>
+<p>This is identical to loss function of DDPM, up to a scale.</p>
+</section>
+<section id="how-to-choose-the-variance-sigma-for-gaussian-mixture-models">
+<h2>How to choose the variance <span class="math notranslate nohighlight">\(\sigma\)</span> for Gaussian mixture models?<a class="headerlink" href="#how-to-choose-the-variance-sigma-for-gaussian-mixture-models" title="Link to this heading">#</a></h2>
+<p>For <span class="math notranslate nohighlight">\(q(x_t) = \int q(x_0) \mathcal{N}(x_t; x_0, \sigma_t^2 \mathbf{I})dx\)</span>,
+<strong>Corresponding loss function:</strong> <span class="math notranslate nohighlight">\( \mathbb{E}_{x_0\sim q(x_0)} \left[|| \nabla_{x_t} \log q(x_0) - s_\theta(x_t) ||^2 \right]\)</span></p>
+<ul class="simple">
+<li><p>For small <span class="math notranslate nohighlight">\(\sigma_t\)</span>, the score prediction is close to given data samples and hence it is more accurate in high-density regions, but poor generalization in low-density areas</p></li>
+<li><p>Large <span class="math notranslate nohighlight">\(\sigma_t\)</span>, may over-corrupt the original data distribution and may lead to noisy score predictions. Score prediction id better in low-density regions but adds excessive noise to high-density samples.</p></li>
+</ul>
+<p>To select right <span class="math notranslate nohighlight">\(\sigma\)</span> <strong>Annealed Langevin Dynamics</strong> is used, where <span class="math notranslate nohighlight">\(\sigma_t\)</span> gradually decreases over time.
+<strong>Annealed Langevin Dynamics</strong> is similar to the reverse diffusion process.</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}_{x_0\sim q(x_0),t&gt;1, x_t\sim q(x_t|x_0)} \left[|| s_\theta(x,t)- \nabla_{x_t} \log q(x_t|x_0)||^2 \right]
+\]</div>
+<p>The reverse of the annealed Langevin dynamics can be seen as a gradual data perturbation, which is the same as the forward diffusion process.
+In a continuous time domain, the data perturbation (forward) process is described by the following stochastic differential equation (SDE):</p>
+<div class="math notranslate nohighlight">
+\[
+dx = f(x,t)dt+ g(t) dw
+\]</div>
+<p>while its reverse process is also formulated as another stochastic differential equation:</p>
+<div class="math notranslate nohighlight">
+\[
+dx = [f(x,t)dt-g^2(t) \nabla_x \log p_t(x)]dt + g(t) dw 
+\]</div>
+<p>where</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(f(x,t)\)</span>: Drift coefficient</p></li>
+<li><p><span class="math notranslate nohighlight">\(g(t)\)</span>: diffusion coefficient</p></li>
+<li><p><span class="math notranslate nohighlight">\(dw\)</span>: infinitesimal white noise (called Brownian motion)</p></li>
+</ul>
+<p><img alt="Score-Based Generative Modeling through Stochastic Differential Equations. Forward and backward process are expressed using SDEs and a score function is used to drive the training of the network. Figure taken from Song et al. 2021." src="../_images/SDE_score_matching.png" /></p>
+<p>DDPM is a specific discretization of the SDE formulations.</p>
+</section>
+<hr class="docutils" />
+<section id="issues-underlying-diffusion-models">
+<h2>Issues Underlying Diffusion Models<a class="headerlink" href="#issues-underlying-diffusion-models" title="Link to this heading">#</a></h2>
+<p>There are several challenges involved with diffusion models.</p>
+<ul class="simple">
+<li><p>Inaccuracy of training. The training data is known to lie on a low-dimensional manifold. While training a diffusion modeling using score matching, it is hard to learn function with lipschitzness, specially neat <span class="math notranslate nohighlight">\(t=0\)</span>.</p></li>
+<li><p>Slow sampling. Sampling using a diffusion model is simulating a differential equation, where the quality of sample is inversely proportional to the step size used to simulate the differential equation. Several techniques based on higher-order gradients, adaptive step sizes, extrapolation for better approximation, and distillation networks to estimate the trajectory of the differential equation are used to make diffusion model faster.</p></li>
+<li><p>Scalability to high-dimensional datasets</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading">#</a></h2>
+<p>Yang Song, Jascha Sohl-Dickstein, Diederik P Kingma, Abhishek Kumar, Stefano Ermon, and Ben Poole. Score-based generative modeling through stochastic differential equations. In International Conference on Learning Representations, 2021.</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./content"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="ddim.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Denoising Diffusion Implicit Models (DDIM)</p>
+      </div>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#score-function">Score Function</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#langevin-dynamics">Langevin Dynamics</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#score-matching">Score Matching</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#noise-conditional-score-based-model">Noise-Conditional Score-Based Model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-choose-the-variance-sigma-for-gaussian-mixture-models">How to choose the variance <span class="math notranslate nohighlight">\(\sigma\)</span> for Gaussian mixture models?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#issues-underlying-diffusion-models">Issues Underlying Diffusion Models</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reference">Reference</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Sumukh
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

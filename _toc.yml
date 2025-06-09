@@ -5,7 +5,8 @@ chapters:
   - file: content/genai_before_diffusion
   - file: content/ddpm
   - file: content/codes/code_1_md
-  # - file: content/score_matching
-  # - file: content/ddim
+  - file: content/ddim
+  - file: content/score_matching
+
   # - file: content/conclusion
   # - file: content/references
