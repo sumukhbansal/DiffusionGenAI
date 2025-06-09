@@ -189,6 +189,8 @@
 
 
 
+<li class="toctree-l1"><a class="reference internal" href="ddim.html">Denoising Diffusion Implicit Models (DDIM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="score_matching.html">Score Based Methods</a></li>
 </ul>
 
     </div>
@@ -346,6 +348,7 @@ document.write(`
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Denoising Matching Term</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mean-predictor">Mean Predictor</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#x-0-predictor"><span class="math notranslate nohighlight">\(x_0\)</span> Predictor</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#epsilon-t-predictor"><span class="math notranslate nohighlight">\(\epsilon_t\)</span> Predictor</a></li>
 </ul>
@@ -387,6 +390,37 @@ q(x_t|x_{t-1}) &amp;= \mathcal{N}(x_t; \sqrt{1-\beta_t}x_{t-1}, \beta_t \mathbf{
 <li><p>Variance Preserving: <span class="math notranslate nohighlight">\(q(x_t|x_{t-1}) = \mathcal{N}(x_t; \sqrt{1-\beta_t}x_{t-1}, \beta_t \mathbf{I})\)</span>,  where the goal is to keep the variance very small for each step.</p></li>
 <li><p>Variance Exploding: <span class="math notranslate nohighlight">\(q(x_t|x_{t-1}) = \mathcal{N}(x_t; x_{t-1}, (\sigma_i^2-\sigma_{i-1}^2)\mathbf{I})\)</span></p></li>
 </ul>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Property</p></th>
+<th class="head"><p>Variance Exploding (VE)</p></th>
+<th class="head"><p>Variance Preserving (VP)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Noise Schedule</p></td>
+<td><p>Variance increases</p></td>
+<td><p>Variance ~ stays in [0,1]</p></td>
+</tr>
+<tr class="row-odd"><td><p>Final Noise Distribution</p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathcal{N}(0, \sigma_{\text{max}}^2 I)\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathcal{N}(0, I)\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>Score Matching Loss</p></td>
+<td><p>Based on Gaussian noise</p></td>
+<td><p>Uses closed-form ELBO or reweighted loss</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sampling Behavior</p></td>
+<td><p>More stable, coarse-to-fine</p></td>
+<td><p>Requires many steps to avoid collapse</p></td>
+</tr>
+<tr class="row-even"><td><p>Common Usage</p></td>
+<td><p>Score-based SDEs</p></td>
+<td><p>DDPM</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <p>Further more, the <span class="math notranslate nohighlight">\(\beta_t\)</span> can be constant, linearly or quadratically increasing, a cosine function, or learned.</p>
 <p><strong>Note:</strong> For reverse step <span class="math notranslate nohighlight">\(p_\theta(x_{t-1}|x_t)\)</span> becomes Gaussian only when <span class="math notranslate nohighlight">\(\beta_t\)</span> is small <span class="math notranslate nohighlight">\((\beta_t&lt;&lt;1)\)</span>.</p>
 <p><strong>Reverse process:</strong></p>
@@ -472,15 +506,17 @@ q(x_t|x_{t-1}) &amp;= \mathcal{N}(x_t; \sqrt{\alpha_t}x_{t-1}, (1-\alpha_t) \mat
 \end{align*}
 \end{split}\]</div>
 <hr class="docutils" />
-<p>Given <span class="math notranslate nohighlight">\(x_1 \sim \mathcal{N}(\mu_1, \sigma_1^2 \mathbf{I})\)</span> and <span class="math notranslate nohighlight">\(x_1 \sim \mathcal{N}(\mu_2, \sigma_2^2 \mathbf{I})\)</span>, then
-$<span class="math notranslate nohighlight">\(
+<p><strong>Note:</strong> Given <span class="math notranslate nohighlight">\(x_1 \sim \mathcal{N}(\mu_1, \sigma_1^2 \mathbf{I})\)</span> and <span class="math notranslate nohighlight">\(x_1 \sim \mathcal{N}(\mu_2, \sigma_2^2 \mathbf{I})\)</span>, then</p>
+<div class="math notranslate nohighlight">
+\[
 x_1+x_2 \sim \mathcal{N}(\mu_1  +\mu_2, (\sigma_1^2+\sigma_2^2) \mathbf{I})
-\)</span>$</p>
+\]</div>
 <hr class="docutils" />
-<p>Also, if <span class="math notranslate nohighlight">\(\epsilon_1, \epsilon_2 \sim \mathcal{N}(0,1)\)</span>, and <span class="math notranslate nohighlight">\(x_1 = \sigma_1\epsilon_1\)</span>, <span class="math notranslate nohighlight">\(x_2 = \sigma_2\epsilon_2\)</span>, then
-$<span class="math notranslate nohighlight">\(
-x_1 + x_2 \sim \mathcal{N}(0,(\sigma_1^2 + \epsilon_2^2)\mathbf{I})\)</span> and <span class="math notranslate nohighlight">\(x_1 + x_2 = \sqrt{\sigma_1^2 + \epsilon_2^2} \epsilon
-\)</span>$</p>
+<p>Also, if <span class="math notranslate nohighlight">\(\epsilon_1, \epsilon_2 \sim \mathcal{N}(0,1)\)</span>, and <span class="math notranslate nohighlight">\(x_1 = \sigma_1\epsilon_1\)</span>, <span class="math notranslate nohighlight">\(x_2 = \sigma_2\epsilon_2\)</span>, then</p>
+<div class="math notranslate nohighlight">
+\[
+x_1 + x_2 \sim \mathcal{N}(0,(\sigma_1^2 + \epsilon_2^2)\mathbf{I})$ and $x_1 + x_2 = \sqrt{\sigma_1^2 + \epsilon_2^2} \epsilon
+\]</div>
 <hr class="docutils" />
 <p>Using the above expression for forward steps,</p>
 <div class="math notranslate nohighlight">
@@ -522,45 +558,37 @@ q(x_t|x_0) = \mathcal{N}(\sqrt{\bar{\alpha}}x_0, (1-\bar{\alpha}_t)\mathbf{I}), 
 <hr class="docutils" />
 <section id="id1">
 <h2>Denoising Matching Term<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<p>The denoising KL term in the ELBO encourages the model distribution <span class="math notranslate nohighlight">\(p_\theta(x_{t-1}|x_t)\)</span> to match the true posterior <span class="math notranslate nohighlight">\(q(x_{t-1}|x_t, x_0)\)</span> for each t.</p>
 <div class="math notranslate nohighlight">
 \[
 \sum_{t=2}^{T} \mathbb{E}_{q(x_{t}| x_0)} \left[ D_{KL} (q(x_{t-1}|x_{t}, x_0)|| p_\theta(x_{t-1}|x_{t}))\right]
 \]</div>
-<p>For denoising match term, <span class="math notranslate nohighlight">\(p_\theta(x_{t-1}|x_t)\)</span> should be close to <span class="math notranslate nohighlight">\(q(x_{t-1}|x_t, x_0)\)</span> for each t.
-What is <span class="math notranslate nohighlight">\(q(x_{t-1}|x_{t}, x_0)\)</span>?</p>
+<p><strong>What is <span class="math notranslate nohighlight">\(q(x_{t-1}|x_{t}, x_0)\)</span>?</strong></p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
-\begin{align*} 
-&amp;q(x_{t-1}|x_{t}, x_0) = q(x_{t}|x_{t-1}, x_0) \frac{q(x_{t-1}| x_0)}{q(x_{t}| x_0)} 
-= q(x_{t}|x_{t-1}) \frac{q(x_{t-1}| x_0)}{q(x_{t}| x_0)} \quad \text{\{Using Markovian assumption}\}\\
-&amp; q(x_{t}| x_{t-1})= \mathcal{N}(\sqrt{\alpha_t}x_{t-1}, (1-\alpha_t)\mathbf{I}) \\
-&amp; q(x_{t-1}| x_0)= \mathcal{N}(\sqrt{\bar{\alpha}_{t-1}}x_0, (1-\bar{\alpha}_{t-1})\mathbf{I})\\
-&amp; q(x_{t}| x_0)= \mathcal{N}(\sqrt{\bar{\alpha_t}}x_0, (1-\bar{\alpha}_t)\mathbf{I})
+\begin{align*}
+q(x_{t}| x_{t-1})&amp;= \mathcal{N}(\sqrt{\alpha_t}x_{t-1}, (1-\alpha_t)\mathbf{I}) \\
+q(x_{t-1}| x_0)&amp;= \mathcal{N}(\sqrt{\bar{\alpha}_{t-1}}x_0, (1-\bar{\alpha}_{t-1})\mathbf{I})\\
+q(x_{t}| x_0)&amp;= \mathcal{N}(\sqrt{\bar{\alpha_t}}x_0, (1-\bar{\alpha}_t)\mathbf{I})
 \end{align*}
 \end{split}\]</div>
-<p>Using above expressions,</p>
+<p>Using Bayes’ rule, the Markov property, and above expressions:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
 \begin{align*} 
-q(x_{t-1}|x_{t}, x_0) &amp;= q(x_{t}|x_{t-1}) \frac{q(x_{t-1}| x_0)}{q(x_{t}| x_0)}\\
-&amp;\propto exp\left( -\frac{1}{2} \left( 
+q(x_{t-1}|x_{t}, x_0) &amp;= q(x_{t}|x_{t-1}, x_0) \frac{q(x_{t-1}| x_0)}{q(x_{t}| x_0)} 
+= q(x_{t}|x_{t-1}) \frac{q(x_{t-1}| x_0)}{q(x_{t}| x_0)}\\
+q(x_{t-1}|x_{t}, x_0) &amp;\propto exp\left( -\frac{1}{2} \left( 
 \frac{(x_t-\sqrt{\alpha_t}x_{t-1})}{1-\alpha_t} 
 +\frac{(x_t-\sqrt{\bar{\alpha}_{t-1}}x_{0})}{1-\bar{\alpha}_{t-1}} 
 -\frac{(x_t-\sqrt{\bar{\alpha}_{t}}x_{0})}{1-\bar{\alpha}_{t}} 
 \right)\right)\\
 &amp;= ...\\
-&amp;= \mathcal{N}(\tilde{\mu}(x_t, x_0), \tilde{\sigma}_t^2 \mathbf{I}) \quad \text{\{another normal distribution\}}
+&amp;= \mathcal{N}(\tilde{\mu}(x_t, x_0), \tilde{\sigma}_t^2 \mathbf{I}) \quad \text{\{another normal distribution\}}\\
+\tilde{\mu}(x_t, x_0) &amp;= \frac{\sqrt{\alpha}(1-\bar{\alpha}_{t-1})}{1-\bar{\alpha}_{t}} x_t + \frac{\sqrt{\bar{\alpha}_{t-1}}(1-\alpha_t)}{1-\bar{\alpha}_{t}} x_0 \\
+\tilde{\sigma}_t^2 &amp;= \frac{(1-\bar{\alpha}_{t-1})(1-\alpha_t)}{1-\bar{\alpha}_{t}}
 \end{align*}
 \end{split}\]</div>
-<p>where</p>
-<div class="math notranslate nohighlight">
-\[
-\tilde{\mu}(x_t, x_0) = \frac{\sqrt{\alpha}(1-\bar{\alpha}_{t-1})}{1-\bar{\alpha}_{t}} x_t + \frac{\sqrt{\bar{\alpha}_{t-1}}(1-\alpha_t)}{1-\bar{\alpha}_{t}} x_0 
-\]</div>
-<div class="math notranslate nohighlight">
-\[
-\tilde{\sigma}_t^2 = \frac{(1-\bar{\alpha}_{t-1})(1-\alpha_t)}{1-\bar{\alpha}_{t}}
-\]</div>
 <p>The mean <span class="math notranslate nohighlight">\(\tilde{\mu}\)</span> is a function of <span class="math notranslate nohighlight">\(x_t\)</span>  and <span class="math notranslate nohighlight">\(x_0\)</span>. The covariance is predefined from user defined <span class="math notranslate nohighlight">\(\beta_t\)</span> or <span class="math notranslate nohighlight">\(\alpha_t\)</span>. So, <span class="math notranslate nohighlight">\(p_\theta(x_{t-1}|x_t)\)</span> can be modeled as a Gaussian with predefined <span class="math notranslate nohighlight">\(\sigma\)</span> to match <span class="math notranslate nohighlight">\(q(x_{t-1}|x_t,x_0)\)</span>, but note that <span class="math notranslate nohighlight">\(p_\theta(x_{t-1}|x_t)\)</span> is not conditioned on <span class="math notranslate nohighlight">\(x_0\)</span>.</p>
 <hr class="docutils" />
 <p>If <span class="math notranslate nohighlight">\(p(x) = N(x; \mu_p, \sigma^2I)\)</span> and <span class="math notranslate nohighlight">\(q(x) = N(x; \mu_q, \sigma^2I)\)</span>, then</p>
@@ -569,11 +597,14 @@ q(x_{t-1}|x_{t}, x_0) &amp;= q(x_{t}|x_{t-1}) \frac{q(x_{t-1}| x_0)}{q(x_{t}| x_
 D_{KL}(p||q) = \frac{1}{2\sigma^2} ||\mu_q-\mu_p||^2 
 \]</div>
 <hr class="docutils" />
-<p><strong>How to model the variational distribution <span class="math notranslate nohighlight">\(p_\theta(x_{t-1}|x_t)\)</span>?</strong></p>
-<p>For <span class="math notranslate nohighlight">\(q(x_{t-1}|x_{t}, x_0)= N(\tilde{\mu}(x_t, x_0), \tilde{\sigma}_t^2 I)\)</span>, the variance <span class="math notranslate nohighlight">\(\tilde{\sigma}_t^2\)</span> is not a function of <span class="math notranslate nohighlight">\(x_t\)</span> and <span class="math notranslate nohighlight">\(x_0\)</span>. Hence, we can define the variational distribution <span class="math notranslate nohighlight">\(p_\theta(x_{t-1}|x_t)\)</span> as</p>
+<section id="mean-predictor">
+<h3>Mean Predictor<a class="headerlink" href="#mean-predictor" title="Link to this heading">#</a></h3>
+<p>How to model the variational distribution <span class="math notranslate nohighlight">\(p_\theta(x_{t-1}|x_t)\)</span>?
+For <span class="math notranslate nohighlight">\(q(x_{t-1}|x_{t}, x_0)= N(\tilde{\mu}(x_t, x_0), \tilde{\sigma}_t^2 I)\)</span>, the variance <span class="math notranslate nohighlight">\(\tilde{\sigma}_t^2\)</span> is not a function of <span class="math notranslate nohighlight">\(x_t\)</span> and <span class="math notranslate nohighlight">\(x_0\)</span>.
+Hence, we can define the variational distribution <span class="math notranslate nohighlight">\(p_\theta(x_{t-1}|x_t)\)</span> as</p>
 <div class="math notranslate nohighlight">
 \[
-p_\theta(x_{t-1}|x_{t})= N({\mu_\theta}(x_t, t), \tilde{\sigma}_t^2 I) \quad \text{where } \mu_\theta(x_t, t) \text{: mean predictor}.
+p_\theta(x_{t-1}|x_{t})= N({\mu_\theta}(x_t, t), \tilde{\sigma}_t^2 I) \quad \text{where } \mu_\theta(x_t, t) \text{ is a mean predictor}.
 \]</div>
 <div class="math notranslate nohighlight">
 \[
@@ -581,6 +612,7 @@ p_\theta(x_{t-1}|x_{t})= N({\mu_\theta}(x_t, t), \tilde{\sigma}_t^2 I) \quad \te
 \mathbb{E}_{q(x_{t}| x_0)} &amp; [ D_{KL} (q(x_{t-1}|x_{t}, x_0)|| p_\theta(x_{t-1}|x_{t}))] = \frac{1}{2\tilde{\sigma}_t^2} \mathbb{E}_{q(x_{t}| x_0)} \left[|| \mu_\theta(x_t,t)- \tilde{\mu}(x_t,x_0)||^2 \right] 
 \end{align*}
 \]</div>
+</section>
 <hr class="docutils" />
 <section id="x-0-predictor">
 <h3><span class="math notranslate nohighlight">\(x_0\)</span> Predictor<a class="headerlink" href="#x-0-predictor" title="Link to this heading">#</a></h3>
@@ -589,7 +621,7 @@ p_\theta(x_{t-1}|x_{t})= N({\mu_\theta}(x_t, t), \tilde{\sigma}_t^2 I) \quad \te
 \[\begin{split}
 \begin{align*}
 \tilde{\mu}(x_t,x_0) &amp; = \frac{\sqrt{\alpha}(1-\bar{\alpha}_{t-1})}{1-\bar{\alpha}_{t}} x_t + \frac{\sqrt{\bar{\alpha}_{t-1}}(1-\alpha_t)}{1-\bar{\alpha}_{t}} x_0\\
-\tilde{\mu}_\theta(x_t,t) &amp; = \frac{\sqrt{\alpha}(1-\bar{\alpha}_{t-1})}{1-\bar{\alpha}_{t}} x_t + \frac{\sqrt{\bar{\alpha}_{t-1}}(1-\alpha_t)}{1-\bar{\alpha}_{t}} \tilde{x}_\theta(x_t,t)\\
+\tilde{\mu}_\theta(x_t,t) &amp; = \frac{\sqrt{\alpha}(1-\bar{\alpha}_{t-1})}{1-\bar{\alpha}_{t}} x_t + \frac{\sqrt{\bar{\alpha}_{t-1}}(1-\alpha_t)}{1-\bar{\alpha}_{t}} \tilde{x}_\theta(x_t,t)
 \end{align*}
 \end{split}\]</div>
 <div class="math notranslate nohighlight">
@@ -611,7 +643,7 @@ p_\theta(x_{t-1}|x_{t})= N({\mu_\theta}(x_t, t), \tilde{\sigma}_t^2 I) \quad \te
 <hr class="docutils" />
 <section id="epsilon-t-predictor">
 <h3><span class="math notranslate nohighlight">\(\epsilon_t\)</span> Predictor<a class="headerlink" href="#epsilon-t-predictor" title="Link to this heading">#</a></h3>
-<p><strong>From the forward jump:</strong>  <span class="math notranslate nohighlight">\(x_t = \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1-\bar{\alpha}_t}\epsilon_t\)</span>.
+<p>From the forward jump: <span class="math notranslate nohighlight">\(x_t = \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1-\bar{\alpha}_t}\epsilon_t\)</span>.
 If <span class="math notranslate nohighlight">\(x_t\)</span> and <span class="math notranslate nohighlight">\(x_0\)</span> are given, define <span class="math notranslate nohighlight">\(\epsilon_t\)</span> as</p>
 <div class="math notranslate nohighlight">
 \[ 
@@ -634,8 +666,8 @@ If <span class="math notranslate nohighlight">\(x_t\)</span> and <span class="ma
 &amp;= w'_t \mathbb{E}_{q(x_{t}| x_0)} \left[|| \hat{\epsilon}_\theta(x_t,t)- \epsilon_t||^2 \right]
 \end{align*}
 \end{split}\]</div>
-<p>From <span class="math notranslate nohighlight">\(x_t\)</span>, predict the expected value of <span class="math notranslate nohighlight">\(\epsilon_t\)</span> that would result in a sampling <span class="math notranslate nohighlight">\(x_t\)</span> from <span class="math notranslate nohighlight">\(x_0\)</span> through the forward jump.\
-Although all three interpretations: mean prediction, <span class="math notranslate nohighlight">\(x_0\)</span> prediction, and noise prediction, are equivalent, in practice, <span class="math notranslate nohighlight">\(\epsilon_t\)</span> predictor is used since the <span class="math notranslate nohighlight">\(\epsilon_t\)</span> are well normalized and scaled standard normal samples, which makes it easier to train the neural network.</p>
+<p>From <span class="math notranslate nohighlight">\(x_t\)</span> predict the expected value of <span class="math notranslate nohighlight">\(\epsilon_t\)</span> that would result in a sampling <span class="math notranslate nohighlight">\(x_t\)</span> from <span class="math notranslate nohighlight">\(x_0\)</span> through the forward jump.
+Although all three interpretations: mean prediction, <span class="math notranslate nohighlight">\(x_0\)</span> prediction, and noise prediction are equivalent, <span class="math notranslate nohighlight">\(\epsilon_t\)</span> predictor is used in practice, since the <span class="math notranslate nohighlight">\(\epsilon_t\)</span> are well normalized and scaled standard normal samples, which makes it easier to train the neural network.</p>
 <p>For DDPM ELBO,</p>
 <ul class="simple">
 <li><p>The reconstruction term (<span class="math notranslate nohighlight">\(-\mathbb{E}_{q(x_1|x_0)} \left[ \log \; p_\theta(x_0|x_1)\right]\)</span> is same as with VAEs and it is also negligible compared to other loss terms.</p></li>
@@ -766,6 +798,7 @@ Given <span class="math notranslate nohighlight">\(x_t\)</span> and the noise pr
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Denoising Matching Term</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mean-predictor">Mean Predictor</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#x-0-predictor"><span class="math notranslate nohighlight">\(x_0\)</span> Predictor</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#epsilon-t-predictor"><span class="math notranslate nohighlight">\(\epsilon_t\)</span> Predictor</a></li>
 </ul>

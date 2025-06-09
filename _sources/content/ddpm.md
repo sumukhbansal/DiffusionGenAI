@@ -23,6 +23,15 @@ where the noise schedule $\{\beta_t\in (0,1)\}_{t=1}^T$ is monotonically increas
 - Variance Preserving: $q(x_t|x_{t-1}) = \mathcal{N}(x_t; \sqrt{1-\beta_t}x_{t-1}, \beta_t \mathbf{I})$,  where the goal is to keep the variance very small for each step. 
 - Variance Exploding: $q(x_t|x_{t-1}) = \mathcal{N}(x_t; x_{t-1}, (\sigma_i^2-\sigma_{i-1}^2)\mathbf{I})$
 
+
+| Property                 | Variance Exploding (VE)                   | Variance Preserving (VP)                 |
+| ------------------------ | ----------------------------------------- | ---------------------------------------- |
+| Noise Schedule           | Variance increases                        | Variance \~ stays in \[0,1]              |
+| Final Noise Distribution | $\mathcal{N}(0, \sigma_{\text{max}}^2 I)$ | $\mathcal{N}(0, I)$                      |
+| Score Matching Loss      | Based on Gaussian noise                   | Uses closed-form ELBO or reweighted loss |
+| Sampling Behavior        | More stable, coarse-to-fine               | Requires many steps to avoid collapse    |
+| Common Usage             | Score-based SDEs                          | DDPM             |
+
 Further more, the $\beta_t$ can be constant, linearly or quadratically increasing, a cosine function, or learned.
 
 **Note:** For reverse step $p_\theta(x_{t-1}|x_t)$ becomes Gaussian only when $\beta_t$ is small $(\beta_t<<1)$.
@@ -117,7 +126,8 @@ $$
 
 ---
 
-Given $x_1 \sim \mathcal{N}(\mu_1, \sigma_1^2 \mathbf{I})$ and $x_1 \sim \mathcal{N}(\mu_2, \sigma_2^2 \mathbf{I})$, then 
+**Note:** Given $x_1 \sim \mathcal{N}(\mu_1, \sigma_1^2 \mathbf{I})$ and $x_1 \sim \mathcal{N}(\mu_2, \sigma_2^2 \mathbf{I})$, then 
+
 $$
 x_1+x_2 \sim \mathcal{N}(\mu_1  +\mu_2, (\sigma_1^2+\sigma_2^2) \mathbf{I})
 $$
@@ -125,6 +135,7 @@ $$
 ---
 
 Also, if $\epsilon_1, \epsilon_2 \sim \mathcal{N}(0,1)$, and $x_1 = \sigma_1\epsilon_1$, $x_2 = \sigma_2\epsilon_2$, then 
+
 $$
 x_1 + x_2 \sim \mathcal{N}(0,(\sigma_1^2 + \epsilon_2^2)\mathbf{I})$ and $x_1 + x_2 = \sqrt{\sigma_1^2 + \epsilon_2^2} \epsilon
 $$
@@ -175,47 +186,38 @@ As $T\to \infty$, $\bar{\alpha}_T \to 0$. So $q(x_T|x_{0}) \to N(x_T; 0, I)$, wh
 ---
 
 ## Denoising Matching Term 
+The denoising KL term in the ELBO encourages the model distribution $p_\theta(x_{t-1}|x_t)$ to match the true posterior $q(x_{t-1}|x_t, x_0)$ for each t.
 
 $$
 \sum_{t=2}^{T} \mathbb{E}_{q(x_{t}| x_0)} \left[ D_{KL} (q(x_{t-1}|x_{t}, x_0)|| p_\theta(x_{t-1}|x_{t}))\right]
 $$
 
-For denoising match term, $p_\theta(x_{t-1}|x_t)$ should be close to $q(x_{t-1}|x_t, x_0)$ for each t. 
-What is $q(x_{t-1}|x_{t}, x_0)$?
+**What is $q(x_{t-1}|x_{t}, x_0)$?**
 
 $$
-\begin{align*} 
-&q(x_{t-1}|x_{t}, x_0) = q(x_{t}|x_{t-1}, x_0) \frac{q(x_{t-1}| x_0)}{q(x_{t}| x_0)} 
-= q(x_{t}|x_{t-1}) \frac{q(x_{t-1}| x_0)}{q(x_{t}| x_0)} \quad \text{\{Using Markovian assumption}\}\\
-& q(x_{t}| x_{t-1})= \mathcal{N}(\sqrt{\alpha_t}x_{t-1}, (1-\alpha_t)\mathbf{I}) \\
-& q(x_{t-1}| x_0)= \mathcal{N}(\sqrt{\bar{\alpha}_{t-1}}x_0, (1-\bar{\alpha}_{t-1})\mathbf{I})\\
-& q(x_{t}| x_0)= \mathcal{N}(\sqrt{\bar{\alpha_t}}x_0, (1-\bar{\alpha}_t)\mathbf{I})
+\begin{align*}
+q(x_{t}| x_{t-1})&= \mathcal{N}(\sqrt{\alpha_t}x_{t-1}, (1-\alpha_t)\mathbf{I}) \\
+q(x_{t-1}| x_0)&= \mathcal{N}(\sqrt{\bar{\alpha}_{t-1}}x_0, (1-\bar{\alpha}_{t-1})\mathbf{I})\\
+q(x_{t}| x_0)&= \mathcal{N}(\sqrt{\bar{\alpha_t}}x_0, (1-\bar{\alpha}_t)\mathbf{I})
 \end{align*}
 $$
 
-Using above expressions, 
+Using Bayes' rule, the Markov property, and above expressions:
 
 $$
 \begin{align*} 
-q(x_{t-1}|x_{t}, x_0) &= q(x_{t}|x_{t-1}) \frac{q(x_{t-1}| x_0)}{q(x_{t}| x_0)}\\
-&\propto exp\left( -\frac{1}{2} \left( 
+q(x_{t-1}|x_{t}, x_0) &= q(x_{t}|x_{t-1}, x_0) \frac{q(x_{t-1}| x_0)}{q(x_{t}| x_0)} 
+= q(x_{t}|x_{t-1}) \frac{q(x_{t-1}| x_0)}{q(x_{t}| x_0)}\\
+q(x_{t-1}|x_{t}, x_0) &\propto exp\left( -\frac{1}{2} \left( 
 \frac{(x_t-\sqrt{\alpha_t}x_{t-1})}{1-\alpha_t} 
 +\frac{(x_t-\sqrt{\bar{\alpha}_{t-1}}x_{0})}{1-\bar{\alpha}_{t-1}} 
 -\frac{(x_t-\sqrt{\bar{\alpha}_{t}}x_{0})}{1-\bar{\alpha}_{t}} 
 \right)\right)\\
 &= ...\\
-&= \mathcal{N}(\tilde{\mu}(x_t, x_0), \tilde{\sigma}_t^2 \mathbf{I}) \quad \text{\{another normal distribution\}}
+&= \mathcal{N}(\tilde{\mu}(x_t, x_0), \tilde{\sigma}_t^2 \mathbf{I}) \quad \text{\{another normal distribution\}}\\
+\tilde{\mu}(x_t, x_0) &= \frac{\sqrt{\alpha}(1-\bar{\alpha}_{t-1})}{1-\bar{\alpha}_{t}} x_t + \frac{\sqrt{\bar{\alpha}_{t-1}}(1-\alpha_t)}{1-\bar{\alpha}_{t}} x_0 \\
+\tilde{\sigma}_t^2 &= \frac{(1-\bar{\alpha}_{t-1})(1-\alpha_t)}{1-\bar{\alpha}_{t}}
 \end{align*}
-$$
-
-where 
-
-$$
-\tilde{\mu}(x_t, x_0) = \frac{\sqrt{\alpha}(1-\bar{\alpha}_{t-1})}{1-\bar{\alpha}_{t}} x_t + \frac{\sqrt{\bar{\alpha}_{t-1}}(1-\alpha_t)}{1-\bar{\alpha}_{t}} x_0 
-$$
-
-$$
-\tilde{\sigma}_t^2 = \frac{(1-\bar{\alpha}_{t-1})(1-\alpha_t)}{1-\bar{\alpha}_{t}}
 $$
 
 The mean $\tilde{\mu}$ is a function of $x_t$  and $x_0$. The covariance is predefined from user defined $\beta_t$ or $\alpha_t$. So, $p_\theta(x_{t-1}|x_t)$ can be modeled as a Gaussian with predefined $\sigma$ to match $q(x_{t-1}|x_t,x_0)$, but note that $p_\theta(x_{t-1}|x_t)$ is not conditioned on $x_0$.
@@ -230,12 +232,13 @@ $$
 
 ---
 
-**How to model the variational distribution $p_\theta(x_{t-1}|x_t)$?** 
-
-For $q(x_{t-1}|x_{t}, x_0)= N(\tilde{\mu}(x_t, x_0), \tilde{\sigma}_t^2 I)$, the variance $\tilde{\sigma}_t^2$ is not a function of $x_t$ and $x_0$. Hence, we can define the variational distribution $p_\theta(x_{t-1}|x_t)$ as 
+### Mean Predictor
+How to model the variational distribution $p_\theta(x_{t-1}|x_t)$? 
+For $q(x_{t-1}|x_{t}, x_0)= N(\tilde{\mu}(x_t, x_0), \tilde{\sigma}_t^2 I)$, the variance $\tilde{\sigma}_t^2$ is not a function of $x_t$ and $x_0$. 
+Hence, we can define the variational distribution $p_\theta(x_{t-1}|x_t)$ as 
 
 $$
-p_\theta(x_{t-1}|x_{t})= N({\mu_\theta}(x_t, t), \tilde{\sigma}_t^2 I) \quad \text{where } \mu_\theta(x_t, t) \text{: mean predictor}.
+p_\theta(x_{t-1}|x_{t})= N({\mu_\theta}(x_t, t), \tilde{\sigma}_t^2 I) \quad \text{where } \mu_\theta(x_t, t) \text{ is a mean predictor}.
 $$ 
 
 $$
@@ -253,7 +256,7 @@ Taking a closer look at $\tilde{\mu}(x_t,\epsilon_t)$, we can also define $\mu_\
 $$
 \begin{align*}
 \tilde{\mu}(x_t,x_0) & = \frac{\sqrt{\alpha}(1-\bar{\alpha}_{t-1})}{1-\bar{\alpha}_{t}} x_t + \frac{\sqrt{\bar{\alpha}_{t-1}}(1-\alpha_t)}{1-\bar{\alpha}_{t}} x_0\\
-\tilde{\mu}_\theta(x_t,t) & = \frac{\sqrt{\alpha}(1-\bar{\alpha}_{t-1})}{1-\bar{\alpha}_{t}} x_t + \frac{\sqrt{\bar{\alpha}_{t-1}}(1-\alpha_t)}{1-\bar{\alpha}_{t}} \tilde{x}_\theta(x_t,t)\\
+\tilde{\mu}_\theta(x_t,t) & = \frac{\sqrt{\alpha}(1-\bar{\alpha}_{t-1})}{1-\bar{\alpha}_{t}} x_t + \frac{\sqrt{\bar{\alpha}_{t-1}}(1-\alpha_t)}{1-\bar{\alpha}_{t}} \tilde{x}_\theta(x_t,t)
 \end{align*}
 $$
 
@@ -275,7 +278,7 @@ $$
 
 ### $\epsilon_t$ Predictor
 
-**From the forward jump:**  $x_t = \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1-\bar{\alpha}_t}\epsilon_t$. 
+From the forward jump: $x_t = \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1-\bar{\alpha}_t}\epsilon_t$.
 If $x_t$ and $x_0$ are given, define $\epsilon_t$ as
 
 $$ 
@@ -300,9 +303,8 @@ $$
 \end{align*}
 $$
 
-From $x_t$, predict the expected value of $\epsilon_t$ that would result in a sampling $x_t$ from $x_0$ through the forward jump.\\
-Although all three interpretations: mean prediction, $x_0$ prediction, and noise prediction, are equivalent, in practice, $\epsilon_t$ predictor is used since the $\epsilon_t$ are well normalized and scaled standard normal samples, which makes it easier to train the neural network. 
-
+From $x_t$ predict the expected value of $\epsilon_t$ that would result in a sampling $x_t$ from $x_0$ through the forward jump.
+Although all three interpretations: mean prediction, $x_0$ prediction, and noise prediction are equivalent, $\epsilon_t$ predictor is used in practice, since the $\epsilon_t$ are well normalized and scaled standard normal samples, which makes it easier to train the neural network. 
 
 For DDPM ELBO,
 - The reconstruction term ($-\mathbb{E}_{q(x_1|x_0)} \left[ \log \; p_\theta(x_0|x_1)\right]$ is same as with VAEs and it is also negligible compared to other loss terms. 

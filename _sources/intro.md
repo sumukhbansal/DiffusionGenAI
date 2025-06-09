@@ -8,7 +8,7 @@ In this tutorial, we aim to provide comprehensive details on different aspects o
 
 --- 
 
-The material in this tutorial is based on a several wondorful existing courses and tutorials, which are noted below. 
+The material in this tutorial is based on a several wonderful existing courses and tutorials, which are noted below. 
 
 1. CS492(D): Diffusion Models and Their Applications, Minhyuk Sung, KAIST, Fall 2024
     https://mhsung.github.io/kaist-cs492d-fall-2024/

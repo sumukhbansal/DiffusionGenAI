@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Introduction &#8212; Diffusion Based GenAI Tutorial</title>
+    <title>Score Based Methods &#8212; Diffusion Based GenAI Tutorial</title>
   
   
   
@@ -57,11 +57,12 @@
     <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'content/introduction';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'content/score_matching';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Generative Models Before Diffusion" href="genai_before_diffusion.html" />
-    <link rel="prev" title="Diffusion-Based Generative AI" href="../intro.html" />
+    <link rel="prev" title="Denoising Diffusion Implicit Models (DDIM)" href="ddim.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -180,7 +181,7 @@
             </li>
         </ul>
         <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="genai_before_diffusion.html">Generative Models Before Diffusion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ddpm.html">Denoising Diffusion Probabilistic Models (DDPM)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="codes/code_1_md.html">Code: Diffusion from Scratch</a></li>
@@ -188,7 +189,7 @@
 
 
 <li class="toctree-l1"><a class="reference internal" href="ddim.html">Denoising Diffusion Implicit Models (DDIM)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="score_matching.html">Score Based Methods</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Score Based Methods</a></li>
 </ul>
 
     </div>
@@ -243,7 +244,7 @@
       
       
       
-      <li><a href="../_sources/content/introduction.md" target="_blank"
+      <li><a href="../_sources/content/score_matching.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -327,7 +328,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Introduction</h1>
+    <h1>Score Based Methods</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -337,18 +338,13 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-generative-ai">What is Generative AI?</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#motivation-for-diffusion-models">Motivation for Diffusion Models</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#comparison-diffusion-models-vs-gans-vs-vaes">Comparison: Diffusion Models vs GANs vs VAEs</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-diffusion-models-are-transforming-modalities">How Diffusion Models Are Transforming Modalities</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#image-generation">Image Generation</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#video-generation">Video Generation</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#audio-speech-synthesis">Audio &amp; Speech Synthesis</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#language">Language</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#multimodal-tasks">Multimodal Tasks</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#score-function">Score Function</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#langevin-dynamics">Langevin Dynamics</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#score-matching">Score Matching</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#noise-conditional-score-based-model">Noise-Conditional Score-Based Model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-choose-the-variance-sigma-for-gaussian-mixture-models">How to choose the variance <span class="math notranslate nohighlight">\(\sigma\)</span> for Gaussian mixture models?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#issues-underlying-diffusion-models">Issues Underlying Diffusion Models</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reference">Reference</a></li>
 </ul>
             </nav>
         </div>
@@ -360,184 +356,145 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="introduction">
-<h1>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">#</a></h1>
-<section id="what-is-generative-ai">
-<h2>What is Generative AI?<a class="headerlink" href="#what-is-generative-ai" title="Link to this heading">#</a></h2>
-<p>Generative AI refers to a class of artificial intelligence techniques that <strong>generate new data</strong> that mimics existing data. Unlike traditional discriminative models that predict labels or scores, <strong>generative models learn the underlying distribution of data</strong> and can sample from it to produce realistic outputs.</p>
-<p>Generative AI can:</p>
-<ul class="simple">
-<li><p>Generate <strong>images</strong> from text or noise (e.g., Stable Diffusion, DALL·E)</p></li>
-<li><p>Create <strong>videos</strong> from scripts or a few frames (e.g., AnimateDiff)</p></li>
-<li><p>Produce <strong>natural speech</strong> or soundscapes from text (e.g., AudioLDM)</p></li>
-<li><p>Write <strong>articles, code, or stories</strong> from a prompt (e.g., GPT-4)</p></li>
-</ul>
-<p>In essence, it empowers machines to <strong>imagine, create, and simulate</strong> content like a human.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="score-based-methods">
+<h1>Score Based Methods<a class="headerlink" href="#score-based-methods" title="Link to this heading">#</a></h1>
+<p>While DDPM and DDIM use discrete-time formulations of the diffusion process, an alternative view models diffusion as a continuous-time stochastic differential equation (SDE).</p>
+<section id="score-function">
+<h2>Score Function<a class="headerlink" href="#score-function" title="Link to this heading">#</a></h2>
+<p>(Stein) Score is the gradient of the log-likelihood function with respect to a data point:</p>
+<div class="math notranslate nohighlight">
+\[
+\nabla_x \log p(x)
+\]</div>
+<p>Score of the conditional distribution <span class="math notranslate nohighlight">\(q(x_t|x_0)\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+\nabla_{x_t} \log q(x_t|x_0)
+\]</div>
+<p>Relationship between <span class="math notranslate nohighlight">\(\nabla_{x_t} \log q(x_t|x_0)\)</span> and <span class="math notranslate nohighlight">\(\epsilon_t\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align*}
+q(x_t|x_0) &amp;= \mathcal{N}(\sqrt{\bar{\alpha}_t}x_0, (1-\bar\alpha_t)\mathbf{I})\\
+\nabla_{x_t} \log q(x_t|x_0) &amp;=  \nabla_{x_t} \left(
+-\frac{||x_t-\sqrt{\bar{\alpha}_t}x_0||^2}{2(1-\bar\alpha_t)}\right) =-\frac{x_t-\sqrt{\bar{\alpha}_t}x_0}{1-\bar\alpha_t}\\
+&amp;=-\frac{\epsilon_t}{\sqrt{1-\bar\alpha_t}} \quad\left[ \text{as} \quad \epsilon_t = \frac{x_t-\sqrt{\bar{\alpha}_t}x_0}{\sqrt{1-\bar\alpha_t}}\right]
+\end{align*}
+\end{split}\]</div>
+<p><strong>The noise predictor <span class="math notranslate nohighlight">\(\hat\epsilon_\theta(x_t,t)\)</span> can be interpreted as predicting the score <span class="math notranslate nohighlight">\(\nabla_{x_t} \log q(x_t|x_0)\)</span> up to a scaling factor.</strong></p>
+<hr class="docutils" />
+<p><strong>Tweedie’s Formula</strong> gives an estimate of the true mean of a normal distribution from the
+samples drawn from it.</p>
+<div class="math notranslate nohighlight">
+\[
+\text{for }x\sim p(x) = \mathcal{N}(x; \mu, \Sigma), \quad \mathbb{E}[\mu|x] = x+ \Sigma \nabla_x \log p(x)
+\]</div>
+<p>Applying Tweedie’s Formula for <span class="math notranslate nohighlight">\(q(x_t|x_0)\)</span>,
+$<span class="math notranslate nohighlight">\(
+\mathbb{E}[\mu|x] = x+ (1-\bar\alpha_t) \nabla_x \log q(x_t|x_0) = \sqrt{\bar\alpha_t}x_0
+\)</span>$</p>
+<div class="math notranslate nohighlight">
+\[
+\nabla_{x_t} \log q(x_t|x_0) =-\frac{x_t-\sqrt{\bar{\alpha}_t}x_0}{1-\bar\alpha_t}=-\frac{\epsilon_t}{\sqrt{1-\bar\alpha_t}} 
+\]</div>
 </section>
 <hr class="docutils" />
-<section id="motivation-for-diffusion-models">
-<h2>Motivation for Diffusion Models<a class="headerlink" href="#motivation-for-diffusion-models" title="Link to this heading">#</a></h2>
-<p>Before diffusion models gained traction, <strong>Generative Adversarial Networks (GANs)</strong> and <strong>Variational Autoencoders (VAEs)</strong> dominated the generative landscape. However, these models came with challenges:</p>
-<ul class="simple">
-<li><p><strong>GANs</strong> are powerful but suffer from:</p>
+<section id="langevin-dynamics">
+<h2>Langevin Dynamics<a class="headerlink" href="#langevin-dynamics" title="Link to this heading">#</a></h2>
+<p>Langevin dynamics enables sampling from a distribution when only the score function is known. Even without knowing <span class="math notranslate nohighlight">\(q(x)\)</span>, if we have the score function <span class="math notranslate nohighlight">\(\nabla_x \log q(x)\)</span>, we can sample the distribution <span class="math notranslate nohighlight">\(q(x)\)</span> using Langevin dynamics via following steps:</p>
 <ul>
-<li><p>Mode collapse (limited diversity in outputs)</p></li>
-<li><p>Unstable training</p></li>
-<li><p>Lack of likelihood estimation</p></li>
-</ul>
+<li><p>Initialize <span class="math notranslate nohighlight">\(x \sim p_{prior}(x)\)</span>.</p></li>
+<li><p>For <span class="math notranslate nohighlight">\(T\)</span> steps:</p>
+<div class="math notranslate nohighlight">
+\[ 
+    x \leftarrow x + \eta \nabla_x \log q(x) + \sqrt{2\eta \epsilon}, \quad \epsilon\sim \mathcal{N}(0,\mathbf{I)})
+    \]</div>
 </li>
-<li><p><strong>VAEs</strong> are stable but:</p>
-<ul>
-<li><p>Produce blurry or low-fidelity samples</p></li>
-<li><p>Have limited expressiveness in modeling data distributions</p></li>
-</ul>
-</li>
-</ul>
-<p><strong>Diffusion models</strong> emerged to <strong>overcome these limitations</strong>. Their key strengths include:</p>
-<ul class="simple">
-<li><p><strong>Stability during training</strong>: No adversarial loss</p></li>
-<li><p><strong>High sample diversity</strong>: Avoid mode collapse</p></li>
-<li><p><strong>Superior fidelity</strong>: Especially in image and audio generation</p></li>
-<li><p><strong>Flexible conditioning</strong>: Works well with text, images, labels, etc.</p></li>
-<li><p><strong>Probabilistic framework</strong>: Allows explicit likelihood computation and score-based generation</p></li>
-</ul>
-<p>These benefits have led to rapid adoption of diffusion models in academia and industry, with many open-source implementations accelerating research and deployment.</p>
-</section>
-<hr class="docutils" />
-<section id="comparison-diffusion-models-vs-gans-vs-vaes">
-<h2>Comparison: Diffusion Models vs GANs vs VAEs<a class="headerlink" href="#comparison-diffusion-models-vs-gans-vs-vaes" title="Link to this heading">#</a></h2>
-<div class="pst-scrollable-table-container"><table class="table">
-<thead>
-<tr class="row-odd"><th class="head"><p>Feature</p></th>
-<th class="head"><p>GANs</p></th>
-<th class="head"><p>VAEs</p></th>
-<th class="head"><p>Diffusion Models</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>Training Stability</p></td>
-<td><p>❌ Unstable</p></td>
-<td><p>✅ Stable</p></td>
-<td><p>✅ Very Stable</p></td>
-</tr>
-<tr class="row-odd"><td><p>Sample Quality</p></td>
-<td><p>✅ High (if trained well)</p></td>
-<td><p>❌ Often blurry</p></td>
-<td><p>✅ Very high fidelity</p></td>
-</tr>
-<tr class="row-even"><td><p>Mode Coverage</p></td>
-<td><p>❌ Prone to collapse</p></td>
-<td><p>✅ Good</p></td>
-<td><p>✅ Excellent</p></td>
-</tr>
-<tr class="row-odd"><td><p>Inference Speed</p></td>
-<td><p>✅ Fast (1 step)</p></td>
-<td><p>✅ Fast</p></td>
-<td><p>❌ Slow (multi-step)</p></td>
-</tr>
-<tr class="row-even"><td><p>Likelihood Estimation</p></td>
-<td><p>❌ No</p></td>
-<td><p>✅ Yes</p></td>
-<td><p>✅ Yes</p></td>
-</tr>
-<tr class="row-odd"><td><p>Conditioning Flexibility</p></td>
-<td><p>⚠️ Requires tricks</p></td>
-<td><p>⚠️ Possible but limited</p></td>
-<td><p>✅ Highly flexible</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><em>Summary</em>: <strong>Diffusion models offer a trade-off</strong> — slightly slower sampling in exchange for <strong>high-quality, diverse, and controllable generations</strong>.</p>
-</section>
-<hr class="docutils" />
-<section id="how-diffusion-models-are-transforming-modalities">
-<h2>How Diffusion Models Are Transforming Modalities<a class="headerlink" href="#how-diffusion-models-are-transforming-modalities" title="Link to this heading">#</a></h2>
-<section id="image-generation">
-<h3>Image Generation<a class="headerlink" href="#image-generation" title="Link to this heading">#</a></h3>
-<p>Diffusion models are at the heart of state-of-the-art text-to-image systems like:</p>
-<ul class="simple">
-<li><p><strong>DALL·E 2</strong> (OpenAI): Generate imaginative visuals from complex text prompts.</p></li>
-<li><p><strong>Stable Diffusion</strong> (Stability AI): Open-source framework for high-quality image synthesis, fine-tuning, and inpainting.</p></li>
-<li><p><strong>Imagen</strong> (Google): High-fidelity image generation with superior photorealism and caption alignment.</p></li>
-</ul>
-<p><strong>Key Impact</strong>:</p>
-<ul class="simple">
-<li><p>Commercial tools for advertising, design, and creative arts.</p></li>
-<li><p>Personalized avatars, product mockups, and visual storyboarding.</p></li>
-<li><p>Fine-grained control via models like <strong>ControlNet</strong>, enabling generation from depth, pose, or edges.</p></li>
+<li><p>It converges to <span class="math notranslate nohighlight">\(q(x)\)</span> when <span class="math notranslate nohighlight">\(\eta \to 0\)</span> and <span class="math notranslate nohighlight">\(T\to\infty\)</span>.
+Note: only score information <span class="math notranslate nohighlight">\( \nabla_{x}\log q(x)\)</span> is used and not the distribution <span class="math notranslate nohighlight">\(q(x)\)</span> itself. Langevin Dynamics looks very similar to reverse process in DDPM.</p></li>
 </ul>
 </section>
+<section id="score-matching">
+<h2>Score Matching<a class="headerlink" href="#score-matching" title="Link to this heading">#</a></h2>
+<p>One possible way to encode the data distribution <span class="math notranslate nohighlight">\(q(x)\)</span> into a neural network is to train a score prediction network <span class="math notranslate nohighlight">\(s_\theta(x)\)</span> using the following loss function:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}_{x\sim q(x)} \left[ || s_\theta(x)- \nabla_x \log q(x)||^2 \right]
+\]</div>
+<p>This is similar to noise prediction network.</p>
+</section>
 <hr class="docutils" />
-<section id="video-generation">
-<h3>Video Generation<a class="headerlink" href="#video-generation" title="Link to this heading">#</a></h3>
-<p>Recent advances like <strong>VideoCrafter</strong>, <strong>AnimateDiff</strong>, and <strong>ModelScope T2V</strong> have extended diffusion models into the temporal domain. These models generate coherent video clips from:</p>
+<section id="noise-conditional-score-based-model">
+<h2>Noise-Conditional Score-Based Model<a class="headerlink" href="#noise-conditional-score-based-model" title="Link to this heading">#</a></h2>
+<p>How do we compute <span class="math notranslate nohighlight">\(\nabla_x \log q(x)\)</span> when we only have samples of <span class="math notranslate nohighlight">\(q(x)\)</span>?
+Let <span class="math notranslate nohighlight">\(q(x) =q(x_0)\)</span>.
+If we only have samples from <span class="math notranslate nohighlight">\(q(x)\)</span>, we can approximate it using a mixture of Gaussians:</p>
+<div class="math notranslate nohighlight">
+\[
+q(x_t)= \int q(x_0) q(x_t|x_0)dx, \quad \text{where } q(x_t|x_0)= \mathcal{N}(x_t; x_0, \sigma_t^2 \mathbf{I})
+\]</div>
+<p>Now, the sampling from <span class="math notranslate nohighlight">\(q(x_t)\)</span> is the same as:</p>
 <ul class="simple">
-<li><p>Text prompts (e.g., “A panda surfing on waves”).</p></li>
-<li><p>Reference frames (image-to-video).</p></li>
-<li><p>Human motion sequences.</p></li>
+<li><p>Sampling from <span class="math notranslate nohighlight">\(q(x_0)\)</span> (taking a random <span class="math notranslate nohighlight">\(x_0\)</span>) and then</p></li>
+<li><p>Sampling from <span class="math notranslate nohighlight">\(q(x_t|x_0)= \mathcal{N}(x_t; x_0, \sigma_t^2 \mathbf{I})\)</span></p></li>
 </ul>
-<p><strong>Key Impact</strong>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align*}
+\mathbb{E}_{x_0\sim q(x_0)} \left[ || s_\theta(x)- \nabla_x \log q(x)||^2 \right] &amp;=\mathbb{E}_{x_0\sim q(x_0),x_t\sim q(x_t|x_0)} \left[|| s_\theta(x_t)- \nabla_x \log q(x_t|x_0)||^2 \right]\\
+&amp;=\mathbb{E}_{x_0\sim q(x_0),x_t\sim q(x_t|x_0)} \left[|| s_\theta(x_t) + \sqrt{1-\bar\alpha_t} \epsilon_t||^2 \right]
+\end{align*}
+\end{split}\]</div>
+<p>This is identical to loss function of DDPM, up to a scale.</p>
+</section>
+<section id="how-to-choose-the-variance-sigma-for-gaussian-mixture-models">
+<h2>How to choose the variance <span class="math notranslate nohighlight">\(\sigma\)</span> for Gaussian mixture models?<a class="headerlink" href="#how-to-choose-the-variance-sigma-for-gaussian-mixture-models" title="Link to this heading">#</a></h2>
+<p>For <span class="math notranslate nohighlight">\(q(x_t) = \int q(x_0) \mathcal{N}(x_t; x_0, \sigma_t^2 \mathbf{I})dx\)</span>,
+<strong>Corresponding loss function:</strong> <span class="math notranslate nohighlight">\( \mathbb{E}_{x_0\sim q(x_0)} \left[|| \nabla_{x_t} \log q(x_0) - s_\theta(x_t) ||^2 \right]\)</span></p>
 <ul class="simple">
-<li><p>Virtual filmmaking, motion synthesis, and gaming cinematics.</p></li>
-<li><p>AI-powered video ad creation and animation pipelines.</p></li>
-<li><p>Talking head avatars from a single photo + audio.</p></li>
+<li><p>For small <span class="math notranslate nohighlight">\(\sigma_t\)</span>, the score prediction is close to given data samples and hence it is more accurate in high-density regions, but poor generalization in low-density areas</p></li>
+<li><p>Large <span class="math notranslate nohighlight">\(\sigma_t\)</span>, may over-corrupt the original data distribution and may lead to noisy score predictions. Score prediction id better in low-density regions but adds excessive noise to high-density samples.</p></li>
+</ul>
+<p>To select right <span class="math notranslate nohighlight">\(\sigma\)</span> <strong>Annealed Langevin Dynamics</strong> is used, where <span class="math notranslate nohighlight">\(\sigma_t\)</span> gradually decreases over time.
+<strong>Annealed Langevin Dynamics</strong> is similar to the reverse diffusion process.</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}_{x_0\sim q(x_0),t&gt;1, x_t\sim q(x_t|x_0)} \left[|| s_\theta(x,t)- \nabla_{x_t} \log q(x_t|x_0)||^2 \right]
+\]</div>
+<p>The reverse of the annealed Langevin dynamics can be seen as a gradual data perturbation, which is the same as the forward diffusion process.
+In a continuous time domain, the data perturbation (forward) process is described by the following stochastic differential equation (SDE):</p>
+<div class="math notranslate nohighlight">
+\[
+dx = f(x,t)dt+ g(t) dw
+\]</div>
+<p>while its reverse process is also formulated as another stochastic differential equation:</p>
+<div class="math notranslate nohighlight">
+\[
+dx = [f(x,t)dt-g^2(t) \nabla_x \log p_t(x)]dt + g(t) dw 
+\]</div>
+<p>where</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(f(x,t)\)</span>: Drift coefficient</p></li>
+<li><p><span class="math notranslate nohighlight">\(g(t)\)</span>: diffusion coefficient</p></li>
+<li><p><span class="math notranslate nohighlight">\(dw\)</span>: infinitesimal white noise (called Brownian motion)</p></li>
+</ul>
+<p><img alt="Score-Based Generative Modeling through Stochastic Differential Equations. Forward and backward process are expressed using SDEs and a score function is used to drive the training of the network. Figure taken from Song et al. 2021." src="../_images/SDE_score_matching.png" /></p>
+<p>DDPM is a specific discretization of the SDE formulations.</p>
+</section>
+<hr class="docutils" />
+<section id="issues-underlying-diffusion-models">
+<h2>Issues Underlying Diffusion Models<a class="headerlink" href="#issues-underlying-diffusion-models" title="Link to this heading">#</a></h2>
+<p>There are several challenges involved with diffusion models.</p>
+<ul class="simple">
+<li><p>Inaccuracy of training. The training data is known to lie on a low-dimensional manifold. While training a diffusion modeling using score matching, it is hard to learn function with lipschitzness, specially neat <span class="math notranslate nohighlight">\(t=0\)</span>.</p></li>
+<li><p>Slow sampling. Sampling using a diffusion model is simulating a differential equation, where the quality of sample is inversely proportional to the step size used to simulate the differential equation. Several techniques based on higher-order gradients, adaptive step sizes, extrapolation for better approximation, and distillation networks to estimate the trajectory of the differential equation are used to make diffusion model faster.</p></li>
+<li><p>Scalability to high-dimensional datasets</p></li>
 </ul>
 </section>
 <hr class="docutils" />
-<section id="audio-speech-synthesis">
-<h3>Audio &amp; Speech Synthesis<a class="headerlink" href="#audio-speech-synthesis" title="Link to this heading">#</a></h3>
-<p>Diffusion is revolutionizing audio generation through models such as:</p>
-<ul class="simple">
-<li><p><strong>DiffWave</strong> and <strong>WaveGrad</strong>: High-quality vocoders for speech synthesis.</p></li>
-<li><p><strong>AudioLDM</strong>: Text-to-audio generation (e.g., “Sound of rain in a forest”).</p></li>
-<li><p><strong>StyleDiffusion</strong>: Voice cloning, emotion transfer, and accent editing.</p></li>
-</ul>
-<p><strong>Key Impact</strong>:</p>
-<ul class="simple">
-<li><p>Text-to-speech systems with natural prosody and emotion.</p></li>
-<li><p>AI voice dubbing, sound effects generation, and audio inpainting.</p></li>
-<li><p>Personalized AI assistants and virtual characters.</p></li>
-</ul>
-</section>
-<hr class="docutils" />
-<section id="language">
-<h3>Language<a class="headerlink" href="#language" title="Link to this heading">#</a></h3>
-<p>Diffusion models for language are a promising alternative to autoregressive Language Models.
-Traditional autoregressive language models (e.g., GPT) generate text token by token in a fixed left-to-right order. While powerful, they come with limitations such as exposure bias, lack of global control, fixed generation order.</p>
-<p>Diffusion models offer an alternative by generating entire sequences iteratively, denoising from random noise toward coherent text.</p>
-<ul class="simple">
-<li><p>Offer global, flexible generation with potential for editing and controllability.</p></li>
-<li><p>Require clever workarounds due to discreteness of language.
-<strong>Key Impact</strong>:</p></li>
-<li><p>Though not yet mainstream, these models are actively researched and show promise in high-quality, globally consistent text generation.</p></li>
-</ul>
-</section>
-<hr class="docutils" />
-<section id="multimodal-tasks">
-<h3>Multimodal Tasks<a class="headerlink" href="#multimodal-tasks" title="Link to this heading">#</a></h3>
-<p>While diffusion models are traditionally vision- and audio-focused, multimodal models now integrate <strong>language understanding</strong> with other data modalities  through diffusion pipelines:</p>
-<ul class="simple">
-<li><p><strong>LDMs (Latent Diffusion Models)</strong> use language to condition the denoising process.</p></li>
-<li><p><strong>Multimodal Transformers + Diffusion</strong> allow tasks like:</p>
-<ul>
-<li><p>Text-to-image with visual grounding.</p></li>
-<li><p>Text-to-video with temporal reasoning.</p></li>
-<li><p>Cross-modal generation: e.g., generate audio from image captions.</p></li>
-</ul>
-</li>
-</ul>
-<p><strong>Key Impact</strong>:</p>
-<ul class="simple">
-<li><p>Cross-domain creativity: create visuals, voices, or scenes from a single prompt.</p></li>
-<li><p>Rich storytelling for education, advertising, and gaming.</p></li>
-</ul>
-</section>
-</section>
-<hr class="docutils" />
-<section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
-<p>Diffusion models have become the <strong>engine of creativity</strong> in modern AI. Their modular architecture, stability, and scalability have made them the preferred choice for generative applications across modalities. From producing high-res visuals to generating expressive speech and imaginative video, diffusion-based GenAI is defining the future of content creation.</p>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading">#</a></h2>
+<p>Yang Song, Jascha Sohl-Dickstein, Diederik P Kingma, Abhishek Kumar, Stefano Ermon, and Ben Poole. Score-based generative modeling through stochastic differential equations. In International Conference on Learning Representations, 2021.</p>
 </section>
 </section>
 
@@ -572,22 +529,13 @@ Traditional autoregressive language models (e.g., GPT) generate text token by to
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../intro.html"
+       href="ddim.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Diffusion-Based Generative AI</p>
+        <p class="prev-next-title">Denoising Diffusion Implicit Models (DDIM)</p>
       </div>
-    </a>
-    <a class="right-next"
-       href="genai_before_diffusion.html"
-       title="next page">
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Generative Models Before Diffusion</p>
-      </div>
-      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div>
                 </footer>
@@ -605,18 +553,13 @@ Traditional autoregressive language models (e.g., GPT) generate text token by to
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-generative-ai">What is Generative AI?</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#motivation-for-diffusion-models">Motivation for Diffusion Models</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#comparison-diffusion-models-vs-gans-vs-vaes">Comparison: Diffusion Models vs GANs vs VAEs</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-diffusion-models-are-transforming-modalities">How Diffusion Models Are Transforming Modalities</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#image-generation">Image Generation</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#video-generation">Video Generation</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#audio-speech-synthesis">Audio &amp; Speech Synthesis</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#language">Language</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#multimodal-tasks">Multimodal Tasks</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#score-function">Score Function</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#langevin-dynamics">Langevin Dynamics</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#score-matching">Score Matching</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#noise-conditional-score-based-model">Noise-Conditional Score-Based Model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-choose-the-variance-sigma-for-gaussian-mixture-models">How to choose the variance <span class="math notranslate nohighlight">\(\sigma\)</span> for Gaussian mixture models?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#issues-underlying-diffusion-models">Issues Underlying Diffusion Models</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reference">Reference</a></li>
 </ul>
   </nav></div>
 
