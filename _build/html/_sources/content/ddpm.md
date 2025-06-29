@@ -1,4 +1,4 @@
-# Denoising Diffusion Probabilistic Models (DDPM)
+# 3. Denoising Diffusion Probabilistic Models (DDPM)
 Let us consider a special case of Markovian hierarchical Variational Autoencoders (VAEs), where the latent space has the same dimensionality as the data space. In this setup, the variational posteriors 
 $q_\phi(x_{t+1}|x_t)$ are not learned but predefined, i.e.,
 

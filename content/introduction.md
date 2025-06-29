@@ -1,4 +1,4 @@
-# Introduction
+# 1. Introduction
 
 ## What is Generative AI?
 

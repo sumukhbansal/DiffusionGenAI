@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Generative Models Before Diffusion &#8212; Diffusion Based GenAI Tutorial</title>
+    <title>2. Generative Models Before Diffusion &#8212; Diffusion Based GenAI Tutorial</title>
   
   
   
@@ -62,8 +62,8 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'content/genai_before_diffusion';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Denoising Diffusion Probabilistic Models (DDPM)" href="ddpm.html" />
-    <link rel="prev" title="Introduction" href="introduction.html" />
+    <link rel="next" title="3. Denoising Diffusion Probabilistic Models (DDPM)" href="ddpm.html" />
+    <link rel="prev" title="1. Introduction" href="introduction.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -182,15 +182,17 @@
             </li>
         </ul>
         <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Generative Models Before Diffusion</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ddpm.html">Denoising Diffusion Probabilistic Models (DDPM)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="codes/code_1_md.html">Code: Diffusion from Scratch</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">1. Introduction</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">2. Generative Models Before Diffusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ddpm.html">3. Denoising Diffusion Probabilistic Models (DDPM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="codes/code_1_md.html">3.1 Code: Diffusion from Scratch</a></li>
 
 
 
-<li class="toctree-l1"><a class="reference internal" href="ddim.html">Denoising Diffusion Implicit Models (DDIM)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="score_matching.html">Score Based Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ddim.html">4. Denoising Diffusion Implicit Models (DDIM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="score_matching.html">5. Score Based Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conditional_methods.html">6. Conditional Diffusion Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="discrete_diffusion.html">7. Discrete Diffusion</a></li>
 </ul>
 
     </div>
@@ -329,7 +331,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Generative Models Before Diffusion</h1>
+    <h1>2. Generative Models Before Diffusion</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -357,7 +359,7 @@ document.write(`
                 <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="generative-models-before-diffusion">
-<h1>Generative Models Before Diffusion<a class="headerlink" href="#generative-models-before-diffusion" title="Link to this heading">#</a></h1>
+<h1>2. Generative Models Before Diffusion<a class="headerlink" href="#generative-models-before-diffusion" title="Link to this heading">#</a></h1>
 <p>The goal of generative models is to synthesize new data samples from an underlying data distribution, typically defined through a set of training examples. From a statistical standpoint, if a probability density function (PDF) describes the data, then new samples can be drawn by sampling from this distribution. This is often done by converting the PDF to a cumulative distribution function (CDF), sampling a point uniformly from <span class="math notranslate nohighlight">\([0, 1]\)</span>, and mapping it through the inverse CDF.</p>
 <p>Thus, the essence of generative modeling is to learn a probability distribution <span class="math notranslate nohighlight">\(p(x)\)</span> that best represents a given dataset <span class="math notranslate nohighlight">\({x_1, x_2, \ldots, x_n}\)</span>. A common strategy is to assume a simple prior distribution <span class="math notranslate nohighlight">\(p(z)\)</span>, such as a standard Gaussian <span class="math notranslate nohighlight">\(\mathcal{N}(0, I)\)</span>, and learn a mapping between <span class="math notranslate nohighlight">\(p(z)\)</span> and <span class="math notranslate nohighlight">\(p(x)\)</span>. This mapping is typically modeled using neural networks, as in autoencoders, GANs, VAEs, flow models, or diffusion models.</p>
 <hr class="docutils" />
@@ -562,7 +564,7 @@ q_\phi(x_{1:T}|x_0)= \prod_{t=1}^{T} q_\phi(x_t|x_{t-1})
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Introduction</p>
+        <p class="prev-next-title">1. Introduction</p>
       </div>
     </a>
     <a class="right-next"
@@ -570,7 +572,7 @@ q_\phi(x_{1:T}|x_0)= \prod_{t=1}^{T} q_\phi(x_t|x_{t-1})
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Denoising Diffusion Probabilistic Models (DDPM)</p>
+        <p class="prev-next-title">3. Denoising Diffusion Probabilistic Models (DDPM)</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -610,7 +612,7 @@ q_\phi(x_{1:T}|x_0)= \prod_{t=1}^{T} q_\phi(x_t|x_{t-1})
   <div class="footer-item">
     
 <p class="component-author">
-By Sumukh
+By Sumukh Bansal
 </p>
 
   </div>
@@ -620,7 +622,7 @@ By Sumukh
 
   <p class="copyright">
     
-      © Copyright 2023.
+      © Copyright 2025.
       <br/>
     
   </p>

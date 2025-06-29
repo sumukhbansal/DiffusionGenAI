@@ -7,6 +7,8 @@ chapters:
   - file: content/codes/code_1_md
   - file: content/ddim
   - file: content/score_matching
+  - file: content/conditional_methods
+  - file: content/discrete_diffusion
 
   # - file: content/conclusion
   # - file: content/references

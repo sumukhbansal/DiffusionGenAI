@@ -1,6 +1,11 @@
 title: Diffusion Based GenAI Tutorial
-author: Sumukh 
+author: Sumukh Bansal 
 logo: images/Logo.png
+
+sphinx:
+  config:
+    copyright: "2025"
+
 
 parse:
   myst_enable_extensions:

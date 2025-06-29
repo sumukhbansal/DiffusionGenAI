@@ -1,4 +1,4 @@
-# Score Based Methods
+# 5. Score Based Methods
 While DDPM and DDIM use discrete-time formulations of the diffusion process, an alternative view models diffusion as a continuous-time stochastic differential equation (SDE).
 
 ## Score Function 
@@ -38,6 +38,7 @@ $$
 
 
 Applying Tweedie’s Formula for $q(x_t|x_0)$,
+
 $$
 \mathbb{E}[\mu|x] = x+ (1-\bar\alpha_t) \nabla_x \log q(x_t|x_0) = \sqrt{\bar\alpha_t}x_0
 $$
