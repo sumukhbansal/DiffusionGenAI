@@ -18,3 +18,7 @@ The material in this tutorial is based on a several wonderful existing courses a
     https://www.practical-diffusion.org/lectures/ 
 
 ---
+
+For queries, comments, or suggestions, feel free to reach out to me via email.
+
+Email: **sumukhbansal@gmail.com**
