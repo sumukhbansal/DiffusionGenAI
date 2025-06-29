@@ -1,4 +1,4 @@
-# Denoising Diffusion Implicit Models (DDIM)
+# 4. Denoising Diffusion Implicit Models (DDIM)
 The Denoising Diffusion Probabilistic Model (DDPM) is based on a Markovian forward process, which results in a sequential and slow generation process:
 
 $$

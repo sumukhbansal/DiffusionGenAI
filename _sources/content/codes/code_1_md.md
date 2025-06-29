@@ -1,4 +1,4 @@
-# Code: Diffusion from Scratch
+# 3.1 Code: Diffusion from Scratch
 
 
 ```python

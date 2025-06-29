@@ -1,0 +1,752 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>6. Conditional Diffusion Methods &#8212; Diffusion Based GenAI Tutorial</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'content/conditional_methods';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="7. Discrete Diffusion" href="discrete_diffusion.html" />
+    <link rel="prev" title="5. Score Based Methods" href="score_matching.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/Logo.png" class="logo__image only-light" alt="Diffusion Based GenAI Tutorial - Home"/>
+    <script>document.write(`<img src="../_static/Logo.png" class="logo__image only-dark" alt="Diffusion Based GenAI Tutorial - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    Diffusion-Based Generative AI
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="genai_before_diffusion.html">2. Generative Models Before Diffusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ddpm.html">3. Denoising Diffusion Probabilistic Models (DDPM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="codes/code_1_md.html">3.1 Code: Diffusion from Scratch</a></li>
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="ddim.html">4. Denoising Diffusion Implicit Models (DDIM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="score_matching.html">5. Score Based Methods</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">6. Conditional Diffusion Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="discrete_diffusion.html">7. Discrete Diffusion</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/content/conditional_methods.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>6. Conditional Diffusion Methods</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#classifier-guidance">Classifier Guidance</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#classifier-free-guidance-cfg">Classifier-Free Guidance (CFG)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#connection-to-classifier-guidance">Connection to classifier guidance</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#negative-prompt">Negative prompt</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#latent-diffusion-models">Latent Diffusion Models</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#controlnet">ControlNet</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lora">Lora</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ddim-deterministic-sampling">DDIM Deterministic Sampling</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ddim-inversion">DDIM Inversion</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#image-editing-using-ddim-inversion">Image Editing Using DDIM Inversion</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#null-text-inversion">Null-Text Inversion</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reference">Reference</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="conditional-diffusion-methods">
+<h1>6. Conditional Diffusion Methods<a class="headerlink" href="#conditional-diffusion-methods" title="Link to this heading">#</a></h1>
+<p>Conditional diffusion models extend standard diffusion models by incorporating external conditioning information such as text, class labels, images, audio, or poses. This additional input guides the generation process, enabling controlled and task-specific outputs.</p>
+<section id="classifier-guidance">
+<h2>Classifier Guidance<a class="headerlink" href="#classifier-guidance" title="Link to this heading">#</a></h2>
+<p>In classifier guidance, the diffusion model is steered using an auxiliary classifier trained to predict the class label <span class="math notranslate nohighlight">\(y\)</span> from the noisy input <span class="math notranslate nohighlight">\(x_t\)</span>. Given the joint distribution:</p>
+<div class="math notranslate nohighlight">
+\[
+p(x_t,y)=p(x_t)p(y|x_t)
+\]</div>
+<p>The standard noise prediction:</p>
+<div class="math notranslate nohighlight">
+\[
+\nabla_{x_t} \log p(x_t) = - \frac{\epsilon_t}{\sqrt{(1-\bar{\alpha}_t)}}, \quad \text{assume } p(x_t)=q(x_t|x_0) 
+\]</div>
+<p>Using standard noise prediction, the score function of this distribution becomes:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align*}
+\nabla_{x_t} \log p(x_t,y) &amp;= \nabla_{x_t} \log p(x_t) + \nabla_{x_t} \log p(y|x_t)\\
+&amp;= - \frac{1}{\sqrt{(1-\bar{\alpha}_t)}} \epsilon_\theta(x_t,t)+\nabla_{x_t} \log p(y|x_t)\\
+&amp;= - \frac{1}{\sqrt{(1-\bar{\alpha}_t)}} (\epsilon_\theta(x_t,t)- \sqrt{(1-\bar{\alpha}_t)}\nabla_{x_t} \log p(y|x_t))
+\end{align*}
+\end{split}\]</div>
+<p>The adjusted noise term with classifier guidance is:</p>
+<div class="math notranslate nohighlight">
+\[
+\bar{\epsilon}_\theta(x_t,t) = \epsilon_\theta(x_t,t)- \sqrt{(1-\bar{\alpha}_t)}\nabla_{x_t} \log p(y|x_t)
+\]</div>
+<p>A classifier network <span class="math notranslate nohighlight">\(p_\phi(y|x_t)\)</span> estimates <span class="math notranslate nohighlight">\(p(y|x_t)\)</span> and its gradient <span class="math notranslate nohighlight">\(\nabla_{x_t} \log p(y|x_t)\)</span> with respect to <span class="math notranslate nohighlight">\(x_t\)</span>. The updated noise prediction is as follows:</p>
+<div class="math notranslate nohighlight">
+\[
+\bar\epsilon_\theta(x_t,t)=\epsilon_\theta(x_t,t)- \sqrt{1-\bar{\alpha}_t}\nabla_{x_t} \log p_\phi(y|x_t))
+\]</div>
+<p>The strength of the classifier guidance can be controlled by adding a weight parameter <span class="math notranslate nohighlight">\(\omega\ge1\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+\bar\epsilon_\theta(x_t,t)=\epsilon_\theta(x_t,t)-\omega\sqrt{1-\bar{\alpha}_t}\nabla_{x_t} \log p_\phi(y|x_t))
+\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align*}
+\bar\epsilon_\theta(x_t,t)&amp;=\epsilon_\theta(x_t,t)-\omega\sqrt{1-\bar{\alpha}_t}\nabla_{x_t} \log p_\phi(y|x_t))\\
+&amp;=-\sqrt{1-\bar{\alpha}_t} (
+\nabla_{x_t} \log p_\phi(x_t)+\omega\nabla_{x_t} \log p_\phi(y|x_t))\\
+&amp;=-\sqrt{1-\bar{\alpha}_t} (
+\nabla_{x_t} \log p_\phi(x_t)+\nabla_{x_t} \log p_\phi(y|x_t)^\omega )\\
+&amp;=-\sqrt{1-\bar{\alpha}_t}
+\nabla_{x_t} \log ( p_\phi(x_t)p_\phi(y|x_t)^\omega )
+\end{align*}
+\end{split}\]</div>
+<p>So, <span class="math notranslate nohighlight">\(p_\phi(x_t)p_\phi(y|x_t)^\omega\)</span> is  used in place of <span class="math notranslate nohighlight">\(p_\phi(x_t)p_\phi(y|x_t)\)</span>. The term <span class="math notranslate nohighlight">\(p_\phi(y|x_t)^\omega\)</span> amplifies large values, which make the network focus more on the modes of the classifier. This results in higher fidelity to input labels but less diversity.
+Classifier guidance provide improved generation quality using labels, but at the expense of training an additional classifier.</p>
+</section>
+<section id="classifier-free-guidance-cfg">
+<h2>Classifier-Free Guidance (CFG)<a class="headerlink" href="#classifier-free-guidance-cfg" title="Link to this heading">#</a></h2>
+<p>Classifier-free guidance eliminates the need for a separate classifier by training a single noise prediction model that handles both conditional and unconditional generation. The noise prediction network is modified to take the condition (label) <span class="math notranslate nohighlight">\(y\)</span> as an additional input.</p>
+<div class="math notranslate nohighlight">
+\[
+\hat{\epsilon}_\theta(x_t,t) \to \hat{\epsilon}_\theta(x_t,y,t)
+\]</div>
+<p>A network is trained jointly for conditional and unconditional input by introducing a null symbol <span class="math notranslate nohighlight">\(\phi\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[
+\hat{\epsilon}_\theta(x_t,\phi,t) \to \text{Noise prediction for null condition input}
+\]</div>
+<p>The impact of the conditioning can be enhanced by extrapolating the conditional noise: <span class="math notranslate nohighlight">\(\hat{\epsilon}_\theta(x_t,y,t)\)</span> from the null-condition noise <span class="math notranslate nohighlight">\(\hat{\epsilon}_\theta(x_t,\phi,t)\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+\tilde{\epsilon}_\theta(x_t,y,t) = (1+\omega)\hat{\epsilon}_\theta(x_t,y,t) - \omega \hat{\epsilon}_\theta(x_t,\phi,t), \quad \text{where } \omega\ge 0.
+\]</div>
+</section>
+<section id="connection-to-classifier-guidance">
+<h2>Connection to classifier guidance<a class="headerlink" href="#connection-to-classifier-guidance" title="Link to this heading">#</a></h2>
+<p>If <span class="math notranslate nohighlight">\(\lambda:=1+\omega\)</span>, then</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align*}
+\tilde{\epsilon}_\theta(x_t,y,t) &amp;= \lambda\hat{\epsilon}_\theta(x_t,y,t) + (1-\lambda) \hat{\epsilon}_\theta(x_t,\phi,t)\\
+&amp;=\hat{\epsilon}_\theta(x_t,\phi,t)+ \lambda(\hat{\epsilon}_\theta(x_t,y,t) -  \hat{\epsilon}_\theta(x_t,\phi,t)) \quad \text{\{extrapolation\}}\\
+&amp;=- \sqrt{1-\bar{\alpha}_t}(\nabla_{x_t} \log p(x_t)+\lambda(\nabla_{x_t} \log p(x_t|y)-\nabla_{x_t} \log p(x_t)))\\
+&amp;=- \sqrt{1-\bar{\alpha}_t}
+\nabla_{x_t} \log \left(p(x_t) \left( \frac{p(x_t|y)}{ p(x_t)}\right)^\lambda\right)\\
+\end{align*}
+\end{split}\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align*}
+p(x_t) \left( \frac{p(x_t|y)}{ p(x_t)}\right)^\lambda &amp;\propto p(x_t) \left( \frac{p(x_t|y)p(y)}{ p(x_t)}\right)^\lambda \quad \text{\{Multiply constant } p(y)^\lambda \text{\}}\\
+&amp;= p(x_t)(p(y|x_t))^\lambda \quad \text{\{ Bayes' theorem \} }
+\end{align*}
+\end{split}\]</div>
+<p>It is equivalent to the condition enhancement in
+Classifier Guidance. Pros and cons:</p>
+<ul class="simple">
+<li><p>Easy to implement. Versatile as not only labels but any additional information can be used.</p></li>
+<li><p>The noise predictor needs to be evaluated twice in the generation process.
+\end{itemize}</p></li>
+</ul>
+</section>
+<section id="negative-prompt">
+<h2>Negative prompt<a class="headerlink" href="#negative-prompt" title="Link to this heading">#</a></h2>
+<p>CFG can also enable negative prompting:</p>
+<div class="math notranslate nohighlight">
+\[
+\tilde{\epsilon}_\theta(x_t,y,t) = (1+\omega)\hat{\epsilon}_\theta(x_t,y_+,t) - \omega \hat{\epsilon}_\theta(x_t,y_-,t)
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(y_+\)</span> and <span class="math notranslate nohighlight">\(y_-\)</span> are positive and negative prompts.</p>
+</section>
+<section id="latent-diffusion-models">
+<h2>Latent Diffusion Models<a class="headerlink" href="#latent-diffusion-models" title="Link to this heading">#</a></h2>
+<p>One of the typical issues with diffusion models is the size/resolution of the input data. Higher dimensional data require higher compute, making the training and inference slow. To reduce computational costs, latent diffusion models operate in a lower-dimensional latent space rather than directly on high-dimensional image data. The noise prediction U-Net is applied to this latent representation, with cross-attention used to incorporate conditioning information.</p>
+<p><img alt="Latent Diffusion Models." src="../_images/latent_diffusion_unet.png" /></p>
+<div class="math notranslate nohighlight">
+\[
+\text{Attention}(Q,K,V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d}}\right).V
+\]</div>
+<p>Query (<span class="math notranslate nohighlight">\(Q\)</span>): output of each U-net layer.\
+Key <span class="math notranslate nohighlight">\(K\)</span> and Value <span class="math notranslate nohighlight">\(V\)</span>: output of the input condition encoder.</p>
+</section>
+<section id="controlnet">
+<h2>ControlNet<a class="headerlink" href="#controlnet" title="Link to this heading">#</a></h2>
+<p>ControlNet enables conditional generation by fine-tuning only the conditional encoding pathway:</p>
+<ul class="simple">
+<li><p>The pre-trained noise prediction network is frozen.</p></li>
+<li><p>For encoding of the conditional image, a copy the pre-trained encoder parameters is used, which are allowed to be updated during finetuning.</p></li>
+<li><p>The encoded conditional image information is combined with the noisy image using zero convolution.</p></li>
+</ul>
+<p><img alt="Controlnet and zero convolution." src="../_images/controlnet_zero_conv.png" /></p>
+<p>Zero Convolution <span class="math notranslate nohighlight">\(Z\)</span> is a 1 × 1 convolution layer with learnable weight (scaling) parameters <span class="math notranslate nohighlight">\(a\)</span> and bias (offset) parameters <span class="math notranslate nohighlight">\(b\)</span>, both of which are initialized with zero.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align*}
+Z(x;a,b)&amp;=ax+b\\
+y_c &amp;= F(x;\theta)+Z(F(x+Z(c;a_1,b_1);\theta_c; a_2,b_2
+\end{align*}
+\end{split}\]</div>
+<p>where c is the condition image. In the beginning <span class="math notranslate nohighlight">\(\theta_c=\theta\)</span> and <span class="math notranslate nohighlight">\(a_i, b_i=0\)</span>. Zero convolution helps in gradually incorporating the conditional information with the original noisy image.</p>
+</section>
+<section id="lora">
+<h2>Lora<a class="headerlink" href="#lora" title="Link to this heading">#</a></h2>
+<p>The Controlnet based network benefits from a special training scheme, where parameters are updated using a low-rank condition on the weights. A bottleneck architecture is used where the intermediate outputs are reduced in dimensionality by representing weight matrices as a product of a low rank matrices.</p>
+<p><img alt="Low-rank adaptation for network training." src="../_images/lora.png" /></p>
+</section>
+<section id="ddim-deterministic-sampling">
+<h2>DDIM Deterministic Sampling<a class="headerlink" href="#ddim-deterministic-sampling" title="Link to this heading">#</a></h2>
+<p>if <span class="math notranslate nohighlight">\(\sigma_t = 0\)</span>, for all t in DDIM,</p>
+<ul class="simple">
+<li><p>Compute <span class="math notranslate nohighlight">\(x_{0|t} = \frac{1}{\sqrt{\bar{\alpha}_t}}( x_t - \sqrt{1-\bar{\alpha}_t} \hat\epsilon_\theta(x_t,t))\)</span></p></li>
+<li><p>Compute <span class="math notranslate nohighlight">\(x_{t-1} = \sqrt{\bar{\alpha}_{t-1}} x_{0|t} + \sqrt{1-\bar{\alpha}_{t-1}} \hat\epsilon_\theta(x_t,t)\)</span></p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align*}
+x_{t-1} &amp;= \sqrt{\frac{\bar{\alpha}_{t-1}}{\bar{\alpha}_t}} (x_t - \sqrt{1-\bar{\alpha}_t} \hat\epsilon_\theta(x_t,t)) + \sqrt{1-\bar{\alpha}_{t-1}} \hat\epsilon_\theta(x_t,t)\\
+&amp;= \sqrt{\bar{\alpha}_{t-1}} \left[ \sqrt{\frac{1}{\bar{\alpha}_{t}}}  x_t + \left( \sqrt{\frac{1}{\bar{\alpha}_{t-1}}-1}- \sqrt{\frac{1}{\bar{\alpha}_{t}}-1}  \right)\hat\epsilon_\theta(x_t,t) \right]
+\end{align*}
+\end{split}\]</div>
+</section>
+<section id="ddim-inversion">
+<h2>DDIM Inversion<a class="headerlink" href="#ddim-inversion" title="Link to this heading">#</a></h2>
+<p>For deterministic sampling, the mapping from <span class="math notranslate nohighlight">\(x_T\)</span> to <span class="math notranslate nohighlight">\(x_0\)</span> is fixed. Then, how can we also compute the inverse mapping from <span class="math notranslate nohighlight">\(x_0\)</span> to <span class="math notranslate nohighlight">\(x_T\)</span>?
+For the forward process with small time intervals,
+approximate <span class="math notranslate nohighlight">\((x_{t+1}-x_t)\)</span> by simply replacing <span class="math notranslate nohighlight">\((t-1)\)</span> with <span class="math notranslate nohighlight">\((t+1)\)</span> in the <span class="math notranslate nohighlight">\((x_{t-1}-x_t)\)</span> formulation.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align*}
+x_{t-1}-x_t &amp;= \sqrt{\bar{\alpha}_{t-1}} \left[ \left( \sqrt{\frac{1}{\bar{\alpha}_{t}}} -\sqrt{\frac{1}{\bar{\alpha}_{t-1}}} \right) x_t + \left( \sqrt{\frac{1}{\bar{\alpha}_{t-1}}-1}- \sqrt{\frac{1}{\bar{\alpha}_{t}}-1}  \right)\hat\epsilon_\theta(x_t,t) \right]\\
+x_{t+1}-x_t &amp;= \sqrt{\bar{\alpha}_{t+1}} \left[ \left( \sqrt{\frac{1}{\bar{\alpha}_{t}}} -\sqrt{\frac{1}{\bar{\alpha}_{t+1}}} \right) x_t + \left( \sqrt{\frac{1}{\bar{\alpha}_{t+1}}-1}- \sqrt{\frac{1}{\bar{\alpha}_{t}}-1}  \right)\hat\epsilon_\theta(x_t,t) \right]\\
+\end{align*}
+\end{split}\]</div>
+<p>Inversion fails when the number of time steps is too small (when the time intervals are too large).</p>
+</section>
+<section id="image-editing-using-ddim-inversion">
+<h2>Image Editing Using DDIM Inversion<a class="headerlink" href="#image-editing-using-ddim-inversion" title="Link to this heading">#</a></h2>
+<p>DDIM inversion helps when the generation of an image is based on existing images while preserving important information. Image editing applications are a good candidate for such techniques. Typically,</p>
+<ul class="simple">
+<li><p>DDIM inversion is performed using the original prompt in CFG.</p></li>
+<li><p>which is then followed by a reverse processing using a new prompt in CFG.</p></li>
+</ul>
+<p><img alt="Left: DDIM Inversion and Regeneration. Right: Image Editing using DDIM Inversion and Regeneration" src="../_images/ddim_inversion_image_edit.png" /></p>
+<ul class="simple">
+<li><p>Good image editing can be achieved by using a high CFG weight for both inversion and generation.</p></li>
+<li><p>However, inversion tends to fail when CFG weight <span class="math notranslate nohighlight">\(\omega\)</span> is high.</p></li>
+</ul>
+</section>
+<section id="null-text-inversion">
+<h2>Null-Text Inversion<a class="headerlink" href="#null-text-inversion" title="Link to this heading">#</a></h2>
+<p>To address some issues related to inversion with high CFG weight, in null-text inversion, first inversion is performed with <span class="math notranslate nohighlight">\(\omega = 1\)</span>. Let the latent variables <span class="math notranslate nohighlight">\(\{x_t^*\}_{t=1,....T}\)</span> be pivots, followed by an inversion with <span class="math notranslate nohighlight">\(\omega &gt;&gt;1\)</span> while enforcing the latent variable <span class="math notranslate nohighlight">\(x_t\)</span> to be close to the corresponding latent variable <span class="math notranslate nohighlight">\(x_t^*\)</span> while tuning some parameters.</p>
+<p>With <span class="math notranslate nohighlight">\(x_{t-1}(x_t,c,\phi)\)</span> indicating the computation of <span class="math notranslate nohighlight">\(x_{t-1}\)</span> from <span class="math notranslate nohighlight">\(x_t\)</span>, input prompt <span class="math notranslate nohighlight">\(c\)</span>, and null prompt <span class="math notranslate nohighlight">\(\phi\)</span>, minimize</p>
+<div class="math notranslate nohighlight">
+\[
+||x_{t-1}^* - x_{t-1}(x_t, c, \phi||^2_2 
+\]</div>
+<p><img alt="Null-Text Inversion." src="../_images/null_inversion.png" /></p>
+</section>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Extra Classifier</p></th>
+<th class="head"><p>Conditioning Type</p></th>
+<th class="head"><p>Pros</p></th>
+<th class="head"><p>Cons</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Classifier Guidance</p></td>
+<td><p>Yes</p></td>
+<td><p>Label only</p></td>
+<td><p>High fidelity, strong control</p></td>
+<td><p>Requires separate classifier</p></td>
+</tr>
+<tr class="row-odd"><td><p>Classifier-Free Guidance</p></td>
+<td><p>No</p></td>
+<td><p>Any (text, image)</p></td>
+<td><p>Simple, flexible, versatile</p></td>
+<td><p>Double forward passes needed</p></td>
+</tr>
+<tr class="row-even"><td><p>ControlNet</p></td>
+<td><p>No (tuned encoder)</p></td>
+<td><p>Image (pose, edge)</p></td>
+<td><p>Explicit spatial control, reusable</p></td>
+<td><p>Increased model size/training</p></td>
+</tr>
+<tr class="row-odd"><td><p>Latent Diffusion</p></td>
+<td><p>No</p></td>
+<td><p>Any</p></td>
+<td><p>Efficient memory/computation</p></td>
+<td><p>Loss of some detail in latent space</p></td>
+</tr>
+<tr class="row-even"><td><p>DDIM Inversion</p></td>
+<td><p>No</p></td>
+<td><p>Any</p></td>
+<td><p>Image editing &amp; regeneration</p></td>
+<td><p>Inversion difficult for small steps or high CFG</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Ho, Jonathan, and Tim Salimans. “Classifier-free diffusion guidance.” arXiv preprint arXiv:2207.125 (2022).</p></li>
+<li><p>Zhang, Lvmin, Anyi Rao, and Maneesh Agrawala. “Adding conditional control to text-to-image diffusion models.” Proceedings of the IEEE/CVF international conference on computer vision. 2023.</p></li>
+<li><p>Dhariwal, Prafulla, and Alexander Nichol. “Diffusion models beat gans on image synthesis.” Advances in neural information processing systems 34 (2021): 8780-8794.</p></li>
+<li><p>Rombach, Robin, et al. “High-resolution image synthesis with latent diffusion models.” Proceedings of the IEEE/CVF conference on computer vision and pattern recognition. 2022.</p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./content"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="score_matching.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">5. Score Based Methods</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="discrete_diffusion.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">7. Discrete Diffusion</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#classifier-guidance">Classifier Guidance</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#classifier-free-guidance-cfg">Classifier-Free Guidance (CFG)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#connection-to-classifier-guidance">Connection to classifier guidance</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#negative-prompt">Negative prompt</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#latent-diffusion-models">Latent Diffusion Models</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#controlnet">ControlNet</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lora">Lora</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ddim-deterministic-sampling">DDIM Deterministic Sampling</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ddim-inversion">DDIM Inversion</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#image-editing-using-ddim-inversion">Image Editing Using DDIM Inversion</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#null-text-inversion">Null-Text Inversion</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reference">Reference</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Sumukh Bansal
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

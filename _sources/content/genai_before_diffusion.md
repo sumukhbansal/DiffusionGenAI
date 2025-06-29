@@ -1,4 +1,4 @@
-# Generative Models Before Diffusion 
+# 2. Generative Models Before Diffusion 
 The goal of generative models is to synthesize new data samples from an underlying data distribution, typically defined through a set of training examples. From a statistical standpoint, if a probability density function (PDF) describes the data, then new samples can be drawn by sampling from this distribution. This is often done by converting the PDF to a cumulative distribution function (CDF), sampling a point uniformly from $[0, 1]$, and mapping it through the inverse CDF.
 
 Thus, the essence of generative modeling is to learn a probability distribution $p(x)$ that best represents a given dataset ${x_1, x_2, \ldots, x_n}$. A common strategy is to assume a simple prior distribution $p(z)$, such as a standard Gaussian $\mathcal{N}(0, I)$, and learn a mapping between $p(z)$ and $p(x)$. This mapping is typically modeled using neural networks, as in autoencoders, GANs, VAEs, flow models, or diffusion models.

@@ -1,0 +1,852 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>7. Discrete Diffusion &#8212; Diffusion Based GenAI Tutorial</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'content/discrete_diffusion';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="6. Conditional Diffusion Methods" href="conditional_methods.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/Logo.png" class="logo__image only-light" alt="Diffusion Based GenAI Tutorial - Home"/>
+    <script>document.write(`<img src="../_static/Logo.png" class="logo__image only-dark" alt="Diffusion Based GenAI Tutorial - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    Diffusion-Based Generative AI
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="genai_before_diffusion.html">2. Generative Models Before Diffusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ddpm.html">3. Denoising Diffusion Probabilistic Models (DDPM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="codes/code_1_md.html">3.1 Code: Diffusion from Scratch</a></li>
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="ddim.html">4. Denoising Diffusion Implicit Models (DDIM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="score_matching.html">5. Score Based Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conditional_methods.html">6. Conditional Diffusion Methods</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">7. Discrete Diffusion</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/content/discrete_diffusion.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>7. Discrete Diffusion</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#discrete-diffusion-process">Discrete Diffusion Process</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#discrete-diffusion-models-based-on-score-entropy">Discrete Diffusion Models Based on Score Entropy</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#concrete-score">Concrete Score</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#discrete-score-entropy">Discrete Score Entropy</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implicit-and-denoising-score-entropy">Implicit and Denoising Score Entropy</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#practical-considerations">Practical Considerations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#masked-diffusion-models-absorbing-state">Masked Diffusion Models ( Absorbing State )</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forward-process">Forward Process</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reverse-process">Reverse Process</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generative-process">Generative Process</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="discrete-diffusion">
+<h1>7. Discrete Diffusion<a class="headerlink" href="#discrete-diffusion" title="Link to this heading">#</a></h1>
+<p>So far, our focus has been on data represented in continuous space. However, many real-world data modalities—such as graphs, speech, text, and even images—are inherently discrete or can be effectively modeled in a discrete domain. For such modalities, the diffusion process must be defined differently than it is in continuous space.</p>
+<p>Among discrete data types, text is one of the most prominent. Traditionally, text modeling has relied heavily on auto-regressive (AR) methods. Given an input text sequence <span class="math notranslate nohighlight">\(x = \{x^1x^2,..., x^d\}\)</span>, an AR model defines the joint probability <span class="math notranslate nohighlight">\(p_\theta(x)\)</span> using the chain rule as:</p>
+<div class="math notranslate nohighlight">
+\[
+p_\theta(x) = p_\theta(x^1x^2...x^d) =p_\theta(x^1) p_\theta(x^2|x^1)p_\theta(x^d|x^1x^2...x^{d-1}) 
+\]</div>
+<p>Auto-regressive models come with several advantages and limitations:</p>
+<ul class="simple">
+<li><p>Pros:</p>
+<ul>
+<li><p>Highly scalable.</p></li>
+<li><p>Capable of modeling complex probability distributions.</p></li>
+<li><p>Provide a strong inductive bias for language modeling tasks.</p></li>
+</ul>
+</li>
+<li><p>Cons:</p>
+<ul>
+<li><p>Prone to sampling drift over long sequences.</p></li>
+<li><p>Require iterative decoding, leading to slow generation speeds.</p></li>
+<li><p>Architecturally constrained for non-sequential or non-language discrete tasks.</p></li>
+<li><p>Not well-suited as a general-purpose inductive bias beyond language modeling.</p></li>
+</ul>
+</li>
+</ul>
+<p>Recently, diffusion-based language models have emerged as strong alternatives, showing competitive performance across several benchmarks. These models address key shortcomings of AR methods, such as temporal quality degradation and the reverse curse of sequence length [Nie et al., 2024].</p>
+<p>In the following section, we provide a comprehensive overview of discrete diffusion models, their formulation, and their growing relevance in modeling discrete data modalities.</p>
+<hr class="docutils" />
+<section id="discrete-diffusion-process">
+<h2>Discrete Diffusion Process<a class="headerlink" href="#discrete-diffusion-process" title="Link to this heading">#</a></h2>
+<p>To model discrete data, we consider probability distributions defined over a finite support <span class="math notranslate nohighlight">\(\mathcal{X}=\{1,...,d\}\)</span>, where <span class="math notranslate nohighlight">\(d\)</span> denotes the number of possible discrete states. These distributions can be represented as probability mass vectors <span class="math notranslate nohighlight">\(p \in \mathbb{R}^d\)</span>, where all entries are non-negative and sum to 1.</p>
+<p>Following [Campbell et al. 2022], the discrete diffusion process evolves a family of distributions <span class="math notranslate nohighlight">\(p_t \in \mathbb{R}^d\)</span> over time, governed by a continuous-time Markov process (CTMP) described by a linear ordinary differential equation (ODE):</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{dp_t}{dt} = Q_tp_t, \quad p_0\approx p_{data}
+\]</div>
+<p>Here, <span class="math notranslate nohighlight">\(Q_t\)</span> denotes the diffusion rate matrix with the following properties:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(Q_t \in \mathbb{R}^{d\times d}\)</span></p></li>
+<li><p>All off-diagonal elements are non-negative.</p></li>
+<li><p>The columns of <span class="math notranslate nohighlight">\(Q_t\)</span> sum to zero, which implies that total mass is conserved.</p></li>
+<li><p><span class="math notranslate nohighlight">\(Q_t\)</span> controls the transition from one state to another state, i.e. <span class="math notranslate nohighlight">\(Q_t(x,y)\)</span> define the transition rate from <span class="math notranslate nohighlight">\(x\)</span> to <span class="math notranslate nohighlight">\(y\)</span>.</p></li>
+<li><p>Typically, <span class="math notranslate nohighlight">\(Q_t\)</span> is time scaled as <span class="math notranslate nohighlight">\(Q_t = \sigma(t) Q\)</span>, ensuring convergence to a stationary distribution <span class="math notranslate nohighlight">\(p_{base}\)</span> as <span class="math notranslate nohighlight">\(t \to \infty\)</span>.</p></li>
+</ul>
+<p>The process can be approximated for a small time step <span class="math notranslate nohighlight">\(\Delta t\)</span> using:</p>
+<div class="math notranslate nohighlight">
+\[
+p_{t+\Delta t}(y| x) = \delta_{yx} + Q_t(y,x) \Delta t + O(\Delta t^2), \quad \quad \delta: \text{Kronecker delta}
+\]</div>
+<p>This can be expressed more explicitly as:</p>
+<!-- $$
+\begin{align*}
+p_{t+\Delta t}(y| x) =
+\left\{
+    \begin {aligned}
+        & Q_t(y,x) \Delta t + o(\Delta t), &&\text{ if } y \neq x,\\
+        & 1 + Q_t(y,x) \Delta t + o(\Delta t),  &&\text{ if } y = x,
+    \end{aligned}
+\end{align*}
+$$ -->
+<div class="math notranslate nohighlight">
+\[\begin{split}
+p_{t+\Delta t}(y \mid x) =
+\begin{cases}
+    Q_t(y, x)\, \Delta t + o(\Delta t), &amp; \text{if } y \neq x, \\
+    1 + Q_t(y, x)\, \Delta t + o(\Delta t), &amp; \text{if } y = x,
+\end{cases}
+\end{split}\]</div>
+<p>Inversely, the rate matrix <span class="math notranslate nohighlight">\(Q_t\)</span> can be derived from the transition probabilities as</p>
+<!-- $$
+\begin{align*}
+Q_t(y,x) =
+\left\{
+    \begin {aligned}
+        & \lim_{\Delta t \to 0} \frac{p_{t+\Delta t}(y| x)}{\Delta t}  , &&\text{ if } y \neq x,\\
+        & \lim_{\Delta t \to 0} \frac{p_{t+\Delta t}(x|x)-1}{\Delta t},  &&\text{ if } y = x,
+    \end{aligned}
+\end{align*}
+$$ -->
+<div class="math notranslate nohighlight">
+\[\begin{split}
+Q_t(y, x) =
+\begin{cases}
+    \lim_{\Delta t \to 0} \dfrac{p_{t+\Delta t}(y \mid x)}{\Delta t}, &amp; \text{if } y \neq x, \\
+    \lim_{\Delta t \to 0} \dfrac{p_{t+\Delta t}(x \mid x) - 1}{\Delta t}, &amp; \text{if } y = x,
+\end{cases}
+\end{split}\]</div>
+<p>The reverse-time diffusion process is governed by a time-reversed diffusion matrix <span class="math notranslate nohighlight">\(\bar{Q}_t\)</span>, as described in [Sun et al. 2022]. The dynamics are given by:</p>
+<div class="math notranslate nohighlight">
+\[
+\begin{align*}
+\frac{dp_{T-t}}{dt} &amp;= \bar{Q}_{T-t} p_{T-t}
+\end{align*}
+\]</div>
+<p>The entries of the reverse rate matrix <span class="math notranslate nohighlight">\(\bar{Q}_t\)</span> are defined as:</p>
+<!-- $$
+\begin{align*}
+\bar{Q}_t(x, y) &=
+\left\{
+    \begin {aligned}
+        & \frac{p_t(y)}{p_t(x)} Q_t(y,x) , &&\text{ if } y \neq x,\\
+        & -\sum_{k\neq x} \bar{Q}_t(k,x)  &&\text{ if } y = x,
+    \end{aligned}
+\end{align*}
+$$ -->
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\bar{Q}_t(x, y) =
+\begin{cases}
+    \frac{p_t(y)}{p_t(x)} Q_t(y, x), &amp; \text{if } y \neq x, \\
+    -\sum_{k \neq x} \bar{Q}_t(k, x), &amp; \text{if } y = x,
+\end{cases}
+\end{split}\]</div>
+<p>Note that computing the reverse transition rates <span class="math notranslate nohighlight">\(\bar{Q}_t(x, y)\)</span> requires knowledge of the marginal probability ratio <span class="math notranslate nohighlight">\(\frac{p_t(y)}{p_t(x)}\)</span>. To estimate this, a neural network can be trained to approximate the score function, which encodes this ratio—analogous to score-based diffusion models in continuous domains.</p>
+</section>
+<hr class="docutils" />
+<section id="discrete-diffusion-models-based-on-score-entropy">
+<h2>Discrete Diffusion Models Based on Score Entropy<a class="headerlink" href="#discrete-diffusion-models-based-on-score-entropy" title="Link to this heading">#</a></h2>
+<p>In the discrete diffusion framework, the key modeling objective is to estimate the transition probability ratio  <span class="math notranslate nohighlight">\(\frac{p_t(y)}{p_t(x)}\)</span> between discrete states. To achieve this, score-based methods are adapted to discrete domains using a formulation known as the Concrete Score, which generalizes the continuous score (log-density gradient) to discrete settings.</p>
+</section>
+<section id="concrete-score">
+<h2>Concrete Score<a class="headerlink" href="#concrete-score" title="Link to this heading">#</a></h2>
+<p>The Concrete Score serves as a discrete analogue of the continuous score function. Instead of using derivatives, it relies on probability ratios within a neighborhood of a state.</p>
+<p>The discrete gradient of a function
+f(x) is defined over a neighborhood <span class="math notranslate nohighlight">\(N(x)\)</span> as:</p>
+<div class="math notranslate nohighlight">
+\[
+\nabla f(x) = [f(y)- f(y)]_{y \in N(x)}
+\]</div>
+<p>Applying this to the log-density, we get:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align*}
+\nabla_x \log p_t &amp;= \frac{\nabla p_t(x)}{p_t(x)} \quad \quad \text{Using the chain rule of log derivative}\\
+&amp; = \underbrace{\left[ \frac{p_t(y)}{p_t(x)}\right]_{y \in N(x)}}_{\text{Concrete Score}} -1\\
+\end{align*}
+\end{split}\]</div>
+<p>The ratio is referred to as the <strong>concrete score</strong>.</p>
+<section id="discrete-score-entropy">
+<h3>Discrete Score Entropy<a class="headerlink" href="#discrete-score-entropy" title="Link to this heading">#</a></h3>
+<p>Several training objectives have been proposed to estimate the Concrete Score in practice.</p>
+<ul>
+<li><p><strong>Concrete Score Matching.</strong>
+In [Meng et al. 2022], authors proposed to train a network <span class="math notranslate nohighlight">\(s_\theta\)</span> to approximate <span class="math notranslate nohighlight">\(\frac{p_t(y)}{p_t(x)}\)</span>, minimizing the loss:</p>
+<div class="math notranslate nohighlight">
+\[ 
+    \mathcal{L}_{CSM} = \frac{1}{2} \mathbb{E}_{x\sim p_t} \left[ \sum_{y\neq x} \left(s_\theta(x_t,t)_y - \frac{p_t(y)}{p_t(x)} \right)^2 \right] 
+    \]</div>
+<p>However, the <span class="math notranslate nohighlight">\(L^2\)</span> objective is not robust to negative or zero values, which can lead to divergent behavior.</p>
+</li>
+<li><p><strong>Score entropy.</strong>
+To address the drawbacks of CSM, Score Entropy introduces a principled modification by minimizing:</p>
+<div class="math notranslate nohighlight">
+\[
+     \mathcal{L}_{SE} = \mathbb{E}_{x\sim p} \left[ \sum_{y\neq x} \left(s_\theta(x)_y - \frac{p(y)}{p(x)} \log s_\theta (x)_y \right)\right] 
+    \]</div>
+<p>Taking the derivative with respect to <span class="math notranslate nohighlight">\(\theta\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+    \frac{d}{d\theta}\left(s_\theta(x)_y - \frac{p(y)}{p(x)} \log s_\theta (x)_y \right)
+    \]</div>
+<p>Setting the derivative to zero gives::</p>
+<div class="math notranslate nohighlight">
+\[
+    1 - \frac{p(y)}{p(x)} \frac{1}{s_\theta (x)_y} = 0 \quad \quad \implies \quad \quad s_\theta (x)_y = \frac{p(y)}{p(x)}  
+    \]</div>
+<p>To ensure non-negativity and improve optimization stability, a normalized version of the score entropy is defined:</p>
+<div class="math notranslate nohighlight">
+\[
+    \mathcal{L}_{SE} = \mathbb{E}_{x\sim p} \left[ \sum_{y\neq x} w_{xy}\left(s_\theta(x)_y - \frac{p(y)}{p(x)} \log s_\theta (x)_y + K \left(\frac{p(y)}{p(x)} \right) \right) \right] 
+    \]</div>
+<p>where <span class="math notranslate nohighlight">\(K(a) = a(\log a - 1)\)</span> ensures that <span class="math notranslate nohighlight">\(\mathcal{L}_{SE} \geq 0\)</span>, and <span class="math notranslate nohighlight">\(w_{xy} \geq 0\)</span> are weighting terms.</p>
+</li>
+<li><p>For the weights <span class="math notranslate nohighlight">\(w_{xy} = 1\)</span>, the gradient of <span class="math notranslate nohighlight">\(\mathcal{L}_{SE}\)</span> simplifies to:
+$<span class="math notranslate nohighlight">\(
+  \nabla s_\theta(x)_y \mathcal{L}_{SE} = \frac{1}{s_\theta(x)_y} \mathcal{L}_{CSM}
+  \)</span>$</p>
+<p>showing that SE rescales gradients adaptively based on output magnitude, improving convergence behavior.</p>
+</li>
+</ul>
+</section>
+<section id="implicit-and-denoising-score-entropy">
+<h3>Implicit and Denoising Score Entropy<a class="headerlink" href="#implicit-and-denoising-score-entropy" title="Link to this heading">#</a></h3>
+<p>Since <span class="math notranslate nohighlight">\(\frac{p(y)}{p(x)}\)</span> is typically unknown, two alternatives are proposed to make training tractable:</p>
+<ul>
+<li><p><strong>Implicit Score Entropy.</strong>
+Score entropy is reformulated (up to a constant) as:</p>
+<div class="math notranslate nohighlight">
+\[
+    \mathcal{L}_{ISE} =    \mathbb{E}_{x\sim p} \left[ \sum_{y\neq x} w_{xy}s_\theta(x)_y -w_{yx}s_\theta(y)_x  \right] 
+    \]</div>
+<p>Even for implicit score entropy, a typical Monte Carlo estimate would require sampling an <span class="math notranslate nohighlight">\(x\)</span> and evaluating <span class="math notranslate nohighlight">\(s_\theta(y)_x\)</span> for all other <span class="math notranslate nohighlight">\(y\)</span>, which is intractable for high dimensions.</p>
+</li>
+<li><p><strong>Denoising Score Entropy.</strong>
+In denoising score entropy, <span class="math notranslate nohighlight">\(p\)</span> is assumed to be generated by perturbing a a base density <span class="math notranslate nohighlight">\(p_0\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+    p(x) = \sum_{x_0} p(x|x_0)p_0(x_0)
+    \]</div>
+<p>Then,</p>
+<div class="math notranslate nohighlight">
+\[\begin{split} 
+    \begin{align*}
+        \mathbb{E}_{x\sim p} \sum_{y\neq x}  \frac{p(y)}{p(x)} \log s_\theta(x)_y
+        &amp;= \sum_{x} \sum_{y\neq x} p(y) \log s_\theta(x)_y  \quad \text{using expectation definition} \\
+        &amp;= \sum_{x} \sum_{y\neq x} \log s_\theta(x)_y \sum_{x_0} p(y|x_0)p_0(x_0)\\
+        &amp;= \sum_{x_0}\sum_{x} \sum_{y\neq x} \log s_\theta(x)_y \frac{p(y|x_0)}{p(x|x_0)}   p(x|x_0)p_0(x_0)\\
+        &amp;= \mathbb{E}_{x_0\sim p_0, x\sim p(.|x_0) } \sum_{y\neq x}\frac{p(y|x_0)}{p(x|x_0)}  \log s_\theta(x)_y 
+        \end{align*}
+    \end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\frac{p(y|x_0)}{p(x|x_0)}\)</span> is possible to compute making the problem tractable.
+The score entropy <span class="math notranslate nohighlight">\(\mathcal{L}_{SE}\)</span> is equivalent (up to a constant independent of <span class="math notranslate nohighlight">\(\theta\)</span>) to the denoising score entropy <span class="math notranslate nohighlight">\(\mathcal{L}_{DSE}\)</span> given as</p>
+<div class="math notranslate nohighlight">
+\[
+    \mathcal{L}_{DSE} = 
+    \underset{x\sim p(.|x_0)}{\underset{{x\sim p}}{\mathbb{E}}} \left[ \sum_{y\neq x} w_{xy}\left(s_\theta(x)_y - \frac{p(y|x_0)}{p(x|x_0)} \log s_\theta (x)_y \right) \right] 
+    \]</div>
+</li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="practical-considerations">
+<h2>Practical Considerations<a class="headerlink" href="#practical-considerations" title="Link to this heading">#</a></h2>
+<p>To make the problem tractable, in practice, ratios between the sequences related by only one hamming distance are considered. For example,  If sequences are denoted by <span class="math notranslate nohighlight">\(x = x^1x^2...x^d\)</span>, the score model is defined as a sequence-to-sequence function:</p>
+<div class="math notranslate nohighlight">
+\[
+s_\theta(.,t):{1,...,n}^d \to \mathbb{R}^{d\times n}
+\]</div>
+<p>with entries:
+$<span class="math notranslate nohighlight">\(
+(s_\theta(x, t))_{i, y^i} \approx \frac{p_t(x^1...y^i...x^d)}{p_t(x^1...x^i...x^d)}
+\)</span>$</p>
+<p>The discrete diffusion matrix <span class="math notranslate nohighlight">\(Q\)</span> matrix is defined as follows:</p>
+<div class="math notranslate nohighlight">
+\[
+Q_t(x^1...x^i...x^d, x^1...y^i...x^d ) = Q_t^{tok}(x^i, y^i), \quad \quad \text{ for x and y differing at position i}
+\]</div>
+<p>To keep the transition stable across time for a noise level <span class="math notranslate nohighlight">\(\sigma\)</span> and fixed <span class="math notranslate nohighlight">\(Q^{tok}\)</span>,</p>
+<div class="math notranslate nohighlight">
+\[
+Q_t^{tok} = \sigma(t) Q^{tok}
+\]</div>
+<p>There are two popular methods to define the diffusion transition matrix <span class="math notranslate nohighlight">\(Q\)</span>. While in one case the target distribution is a uniform distribution, in the other case the diffusion is designed to lead to a absorbing / mask state represented by <strong>[M]</strong>. <span class="math notranslate nohighlight">\(Q\)</span> matrix for both the cases defined as follows:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+Q_{uniform} = \begin{bmatrix}
+1-N &amp; 1 &amp; ... &amp; 1\\
+1 &amp; 1-N &amp; ... &amp; 1\\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots\\
+1 &amp; 1 &amp;... &amp; 1-N
+\end{bmatrix}
+\quad \quad
+Q_{absorb} = \begin{bmatrix}
+-1 &amp; 0 &amp; ... &amp; 0 &amp; 0\\
+0 &amp; -1 &amp; ... &amp; 0 &amp; 0\\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp; \vdots\\
+0 &amp; 0 &amp; ... &amp; -1 &amp; 0\\
+1 &amp; 1 &amp; ... &amp; 1 &amp; 0
+\end{bmatrix} 
+\end{split}\]</div>
+</section>
+<hr class="docutils" />
+<section id="masked-diffusion-models-absorbing-state">
+<h2>Masked Diffusion Models ( Absorbing State )<a class="headerlink" href="#masked-diffusion-models-absorbing-state" title="Link to this heading">#</a></h2>
+<p>Masked diffusion / absorbing state diffusion methods introduce a special token, denoted as <strong>[M]</strong> (for “mask”), into the set of possible states. Each token in the sequence has a certain probability of transitioning into this mask state over time. In absorbing state methods, Once a token transitions to <strong>[M]</strong>, it remains there permanently—hence the term absorbing state.</p>
+<section id="forward-process">
+<h3>Forward Process<a class="headerlink" href="#forward-process" title="Link to this heading">#</a></h3>
+<p>Let <span class="math notranslate nohighlight">\(\alpha_t\)</span> denote the masking schedule, representing the expected proportion of unmasked tokens at time <span class="math notranslate nohighlight">\(t\)</span>.
+The forward transition probability from time <span class="math notranslate nohighlight">\(s&lt;t\)</span> is defined as:</p>
+<!-- $$
+\begin{align*}
+q(x_t|x_s) = 
+\left\{
+    \begin {aligned}
+        & \frac{\alpha_t}{\alpha_s}, \text{if the token remains unmasked}, \\
+        & 1 - \frac{\alpha_t}{\alpha_s}, \text{if the token transition to \textbf{[M]}},\\
+    \end{aligned}
+\end{align*}
+$$ -->
+<div class="math notranslate nohighlight">
+\[\begin{split}
+q(x_t \mid x_s) = 
+\begin{cases}
+    \frac{\alpha_t}{\alpha_s}, &amp; \text{if the token remains unmasked}, \\
+    1 - \frac{\alpha_t}{\alpha_s}, &amp; \text{if the token transitions to } \mathbf{[M]},
+\end{cases}
+\end{split}\]</div>
+<p>The corresponding transition matrix <span class="math notranslate nohighlight">\(Q(s,t)\)</span> can be expressed as:</p>
+<div class="math notranslate nohighlight">
+\[
+Q(s,t) = \frac{\alpha_t}{\alpha_s} \mathbf{I} + \left(1-\frac{\alpha_t}{\alpha_s}\right) \mathbf{I} e^T_m 
+\]</div>
+<p>Here:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\mathbf{I}\)</span> is the identity matrix of size <span class="math notranslate nohighlight">\(d \times d\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(e_m\)</span> is a one-hot vector indicating the mask token <span class="math notranslate nohighlight">\(\textbf{[M]}\)</span>.</p></li>
+</ul>
+</section>
+<section id="reverse-process">
+<h3>Reverse Process<a class="headerlink" href="#reverse-process" title="Link to this heading">#</a></h3>
+<p>The reverse process involves recovering an unmasked token from a masked state. Assuming access to the original token <span class="math notranslate nohighlight">\(x_0\)</span>, the reverse transition probability from time <span class="math notranslate nohighlight">\(t\)</span> to <span class="math notranslate nohighlight">\(s\)</span> (<span class="math notranslate nohighlight">\(s&lt;t\)</span>) is given by:</p>
+<!-- $$
+\begin{align*}
+q(x_s|x_t, x_0)) = 
+\left\{
+    \begin {aligned}
+        & \frac{\alpha_s -\alpha_t}{1-\alpha_t}, \text{if the token is unmasked}, \\
+        & \frac{1-\alpha_s}{1-\alpha_t}, \text{if the token remains mask},\\
+    \end{aligned}
+\end{align*}
+$$ -->
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align*}
+q(x_s \mid x_t, x_0) = 
+\begin{cases}
+    \frac{\alpha_s - \alpha_t}{1 - \alpha_t}, &amp; \text{if the token is unmasked}, \\
+    \frac{1 - \alpha_s}{1 - \alpha_t}, &amp; \text{if the token remains mask},
+\end{cases}
+\end{align*}
+\end{split}\]</div>
+<p>The corresponding reverse transition matrix, conditioned on <span class="math notranslate nohighlight">\(x_0\)</span> is:</p>
+<div class="math notranslate nohighlight">
+\[
+\bar{R}^{x_0}(t,s) = \mathbf{I} + \left(\frac{\alpha_s-\alpha_t}{1- \alpha_t}\right) e_m(x_0-e_m)^T 
+\]</div>
+<p>This formulation leverages the known original token <span class="math notranslate nohighlight">\(x_0\)</span> to define a deterministic direction for denoising masked entries.</p>
+</section>
+<section id="generative-process">
+<h3>Generative Process<a class="headerlink" href="#generative-process" title="Link to this heading">#</a></h3>
+<p>In practice, the original clean token <span class="math notranslate nohighlight">\(x_0\)</span> is not available during inference. Therefore, the generative model approximates the reverse process by learning a neural network that predicts a distribution over possible original tokens.
+The generative process is defined as:</p>
+<div class="math notranslate nohighlight">
+\[
+\begin{align*}
+p_\theta(x_s|x_t) \overset{\Delta}{=} q(x_s|x_t, \mu_\theta(x_t,t) 
+\end{align*}
+\]</div>
+<p>Here:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\mu_\theta(x_t,t) \in \mathbb{R}^d\)</span> is a probability mass vector over possible tokens, which is parameterized by a neural network.</p></li>
+<li><p>This is known as mean-parametrization as neural network predict a mean pf <span class="math notranslate nohighlight">\(x_0\)</span>.</p></li>
+</ul>
+</section>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Lou, Aaron, Chenlin Meng, and Stefano Ermon. “Discrete diffusion modeling by estimating the ratios of the data distribution.” arXiv preprint arXiv:2310.16834 (2023).</p></li>
+<li><p>Arriola, Marianne, et al. “Block diffusion: Interpolating between autoregressive and diffusion language models.” arXiv preprint arXiv:2503.09573 (2025).</p></li>
+<li><p>Nie, Shen, et al. “Scaling up Masked Diffusion Models on Text.” arXiv preprint arXiv:2410.18514 (2024).</p></li>
+<li><p>Sun, Haoran, et al. “Score-based continuous-time discrete diffusion models.” arXiv preprint arXiv:2211.16750 (2022).</p></li>
+<li><p>Ou, Jingyang, et al. “Your absorbing discrete diffusion secretly models the conditional distributions of clean data.” arXiv preprint arXiv:2406.03736 (2024).</p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./content"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="conditional_methods.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">6. Conditional Diffusion Methods</p>
+      </div>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#discrete-diffusion-process">Discrete Diffusion Process</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#discrete-diffusion-models-based-on-score-entropy">Discrete Diffusion Models Based on Score Entropy</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#concrete-score">Concrete Score</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#discrete-score-entropy">Discrete Score Entropy</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implicit-and-denoising-score-entropy">Implicit and Denoising Score Entropy</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#practical-considerations">Practical Considerations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#masked-diffusion-models-absorbing-state">Masked Diffusion Models ( Absorbing State )</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forward-process">Forward Process</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reverse-process">Reverse Process</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generative-process">Generative Process</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Sumukh Bansal
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

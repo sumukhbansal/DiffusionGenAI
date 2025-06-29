@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Score Based Methods &#8212; Diffusion Based GenAI Tutorial</title>
+    <title>5. Score Based Methods &#8212; Diffusion Based GenAI Tutorial</title>
   
   
   
@@ -62,7 +62,8 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'content/score_matching';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="Denoising Diffusion Implicit Models (DDIM)" href="ddim.html" />
+    <link rel="next" title="6. Conditional Diffusion Methods" href="conditional_methods.html" />
+    <link rel="prev" title="4. Denoising Diffusion Implicit Models (DDIM)" href="ddim.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -181,15 +182,17 @@
             </li>
         </ul>
         <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="genai_before_diffusion.html">Generative Models Before Diffusion</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ddpm.html">Denoising Diffusion Probabilistic Models (DDPM)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="codes/code_1_md.html">Code: Diffusion from Scratch</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="genai_before_diffusion.html">2. Generative Models Before Diffusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ddpm.html">3. Denoising Diffusion Probabilistic Models (DDPM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="codes/code_1_md.html">3.1 Code: Diffusion from Scratch</a></li>
 
 
 
-<li class="toctree-l1"><a class="reference internal" href="ddim.html">Denoising Diffusion Implicit Models (DDIM)</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Score Based Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ddim.html">4. Denoising Diffusion Implicit Models (DDIM)</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">5. Score Based Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conditional_methods.html">6. Conditional Diffusion Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="discrete_diffusion.html">7. Discrete Diffusion</a></li>
 </ul>
 
     </div>
@@ -328,7 +331,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Score Based Methods</h1>
+    <h1>5. Score Based Methods</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -357,7 +360,7 @@ document.write(`
                 <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="score-based-methods">
-<h1>Score Based Methods<a class="headerlink" href="#score-based-methods" title="Link to this heading">#</a></h1>
+<h1>5. Score Based Methods<a class="headerlink" href="#score-based-methods" title="Link to this heading">#</a></h1>
 <p>While DDPM and DDIM use discrete-time formulations of the diffusion process, an alternative view models diffusion as a continuous-time stochastic differential equation (SDE).</p>
 <section id="score-function">
 <h2>Score Function<a class="headerlink" href="#score-function" title="Link to this heading">#</a></h2>
@@ -389,10 +392,11 @@ samples drawn from it.</p>
 \[
 \text{for }x\sim p(x) = \mathcal{N}(x; \mu, \Sigma), \quad \mathbb{E}[\mu|x] = x+ \Sigma \nabla_x \log p(x)
 \]</div>
-<p>Applying Tweedie’s Formula for <span class="math notranslate nohighlight">\(q(x_t|x_0)\)</span>,
-$<span class="math notranslate nohighlight">\(
+<p>Applying Tweedie’s Formula for <span class="math notranslate nohighlight">\(q(x_t|x_0)\)</span>,</p>
+<div class="math notranslate nohighlight">
+\[
 \mathbb{E}[\mu|x] = x+ (1-\bar\alpha_t) \nabla_x \log q(x_t|x_0) = \sqrt{\bar\alpha_t}x_0
-\)</span>$</p>
+\]</div>
 <div class="math notranslate nohighlight">
 \[
 \nabla_{x_t} \log q(x_t|x_0) =-\frac{x_t-\sqrt{\bar{\alpha}_t}x_0}{1-\bar\alpha_t}=-\frac{\epsilon_t}{\sqrt{1-\bar\alpha_t}} 
@@ -534,8 +538,17 @@ dx = [f(x,t)dt-g^2(t) \nabla_x \log p_t(x)]dt + g(t) dw
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Denoising Diffusion Implicit Models (DDIM)</p>
+        <p class="prev-next-title">4. Denoising Diffusion Implicit Models (DDIM)</p>
       </div>
+    </a>
+    <a class="right-next"
+       href="conditional_methods.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">6. Conditional Diffusion Methods</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div>
                 </footer>
@@ -574,7 +587,7 @@ dx = [f(x,t)dt-g^2(t) \nabla_x \log p_t(x)]dt + g(t) dw
   <div class="footer-item">
     
 <p class="component-author">
-By Sumukh
+By Sumukh Bansal
 </p>
 
   </div>
@@ -584,7 +597,7 @@ By Sumukh
 
   <p class="copyright">
     
-      © Copyright 2023.
+      © Copyright 2025.
       <br/>
     
   </p>
